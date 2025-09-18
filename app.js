@@ -15,10 +15,18 @@ app.set("views", path.join(__dirname, "views"));
 
 // Serve static files (CSS, images, JS)
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get("/", (req, res) => {
   res.render("index", { title: "My EJS App", message: "Welcome to EJS Starter!" });
+});
+
+//location recever router
+app.post('/location', (req, res) => {
+  const { latitude, longitude } = req.body;
+  console.log("User's Location:", latitude, longitude);
+  res.send(`Location received: Latitude = ${latitude}, Longitude = ${longitude}`);
 });
 
 // Start server

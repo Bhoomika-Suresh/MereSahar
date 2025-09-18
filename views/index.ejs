@@ -1,14 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <div class="container">
-    <h1><%= message %></h1>
-    <p>This is your Node + Express + EJS starter template.</p>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Dynamic title from Express -->
+    <title><%= title %></title>
+
+    <!-- Custom CSS file from /public/css/style.css -->
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- Leaflet CSS for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Page heading (dynamic message from server) -->
+      <h1><%= message %></h1>
+      <p>This is your Node + Express + EJS starter template.</p>
+
+      <!-- Section: Demo to get user location -->
+      <h1>User Location Demo</h1>
+
+      <!-- Form to send location to server (/location route) -->
+      <form action="/location" method="POST" id="locForm">
+        <!-- Hidden fields to store latitude/longitude -->
+        <input type="hidden" name="latitude" id="lat" />
+        <input type="hidden" name="longitude" id="lng" />
+
+        <!-- Button to fetch location from browser -->
+        <button type="button" id="getLoc">Get My Location</button>
+
+        <!-- Button to submit location to server -->
+        <button type="submit">Submit Location</button>
+      </form>
+
+      <!-- Output area to display latitude/longitude on page -->
+      <p id="output"></p>
+
+      <!-- Section header for map feature -->
+      <header>
+        <h1>Civic Issue Reporting</h1>
+      </header>
+
+      <!-- Container where Leaflet map will be rendered -->
+      <div id="map"></div>
+
+      <!-- Leaflet JS library -->
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+      <!-- Custom JS file to handle geolocation logic -->
+      <script src="/js/location.js"></script>
+    </div>
+  </body>
 </html>
