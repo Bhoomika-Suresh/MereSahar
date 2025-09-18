@@ -10,31 +10,30 @@ body {
   padding: 50px;
 }
 
-h1 {
-  color: #333;
-}
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
 header {
   background: #0078d7;
   color: white;
   padding: 1rem;
   text-align: center;
 }
+
 #map {
   height: 400px;
   width: 100%;
+  margin-top: 1rem;
 }
+
 form {
-  margin: 1rem;
+  margin: 1rem auto;
   padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
+  max-width: 500px;
+  background: white;
 }
+
 form input,
+form select,
 form textarea,
 form button {
   display: block;

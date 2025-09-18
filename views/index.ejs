@@ -2,55 +2,79 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Dynamic title from Express -->
     <title><%= title %></title>
 
-    <!-- Custom CSS file from /public/css/style.css -->
     <link rel="stylesheet" href="/css/style.css" />
-
-    <!-- Leaflet CSS for maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   </head>
   <body>
     <div class="container">
-      <!-- Page heading (dynamic message from server) -->
-      <h1><%= message %></h1>
-      <p>This is your Node + Express + EJS starter template.</p>
-
-      <!-- Section: Demo to get user location -->
-      <h1>User Location Demo</h1>
-
-      <!-- Form to send location to server (/location route) -->
-      <form action="/location" method="POST" id="locForm">
-        <label for="username">Your Name:</label>
-        <input type="text" name="username" id="username" required />
-        <!-- Hidden fields to store latitude/longitude -->
-        <input type="hidden" name="latitude" id="lat" />
-        <input type="hidden" name="longitude" id="lng" />
-
-        <!-- Button to fetch location from browser -->
-        <button type="button" id="getLoc">Get My Location</button>
-
-        <!-- Button to submit location to server -->
-        <button type="submit">Submit Location</button>
-      </form>
-
-      <!-- Output area to display latitude/longitude on page -->
-      <p id="output"></p>
-
-      <!-- Section header for map feature -->
       <header>
         <h1>Civic Issue Reporting</h1>
       </header>
 
-      <!-- Container where Leaflet map will be rendered -->
+      <!-- Single form for everything -->
+      <form action="/report" method="POST" id="issueForm">
+        <h2>Report an Issue</h2>
+
+        <!-- Name input -->
+        <label for="username">Your Name</label>
+        <input type="text" name="username" id="username" required placeholder="Enter your name" />
+
+        <!-- Get Location button -->
+        <button type="button" id="getLoc">Get My Location</button>
+
+        <!-- Hidden latitude & longitude (auto-filled) -->
+        <input type="hidden" name="latitude" id="issueLat" />
+        <input type="hidden" name="longitude" id="issueLng" />
+
+        <!-- Category -->
+        <label for="category">Category</label>
+        <select name="category" id="category" required>
+          <option value="">-- Select Category --</option>
+          <option value="Potholes">Potholes</option>
+          <option value="Street Light">Street Light</option>
+          <option value="Water Overflow">Water Overflow</option>
+          <option value="Dustbin Overflow">Dustbin Overflow</option>
+        </select>
+
+        <!-- Description -->
+        <label for="description">Description</label>
+        <textarea name="description" id="description" placeholder="Describe the issue..." required></textarea>
+
+        <!-- Submit button -->
+        <button type="submit">Submit Issue</button>
+      </form>
+
+      <!-- Map -->
       <div id="map"></div>
-
-      <!-- Leaflet JS library -->
-      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-      <!-- Custom JS file to handle geolocation logic -->
-      <script src="/js/location.js"></script>
     </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="/js/location.js"></script>
+
+    <script>
+      // Existing issues passed from server
+      const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
+
+      const issueMarkers = L.markerClusterGroup();
+
+      issues.forEach(issue => {
+        const marker = L.marker([issue.latitude, issue.longitude])
+          .bindPopup(
+            `<b>${issue.username || "Anonymous"}</b><br>
+             <b>Category:</b> ${issue.category}<br>
+             <b>Description:</b> ${issue.description}<br>
+             <b>Status:</b> ${issue.status}`
+          );
+        issueMarkers.addLayer(marker);
+      });
+
+      map.addLayer(issueMarkers);
+    </script>
   </body>
 </html>
