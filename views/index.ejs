@@ -22,6 +22,8 @@
 
       <!-- Form to send location to server (/location route) -->
       <form action="/location" method="POST" id="locForm">
+        <label for="username">Your Name:</label>
+        <input type="text" name="username" id="username" required />
         <!-- Hidden fields to store latitude/longitude -->
         <input type="hidden" name="latitude" id="lat" />
         <input type="hidden" name="longitude" id="lng" />
