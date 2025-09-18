@@ -1,0 +1,35 @@
+//to create table in postgresql
+
+//  CREATE TABLE meresahar (
+//   id SERIAL PRIMARY KEY,
+//   username VARCHAR(100),
+//   category VARCHAR(100),
+//   description VARCHAR(255),
+//   latitude DECIMAL(9,6),
+//   longitude DECIMAL(9,6)
+// );
+
+
+//to insert data 
+// try {
+//     const query = `
+//       INSERT INTO meresahar (username, category, description, latitude, longitude)
+//       VALUES ($1, $2, $3, $4, $5)
+//     `;
+//     await db.query(query, [username, category, description, latitude, longitude]);
+//     res.send('Record added successfully!');
+// } catch (err) {
+//     console.error("Error inserting record", err.stack);
+//     res.status(500).send('Database error');
+// }
+
+// to retrive Data
+// try {
+//     const query = `SELECT * FROM meresahar`;
+//     const result = await db.query(query);
+//     res.json(result.rows);  // send all rows as JSON
+// } catch (err) {
+//     console.error("Error fetching records", err.stack);
+//     res.status(500).send('Database error');
+// }
+
