@@ -9,6 +9,18 @@
 //   longitude DECIMAL(9,6)
 // );
 
+CREATE TABLE meresahar (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100),
+    category VARCHAR(50),
+    description TEXT,
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
+    image BYTEA,   -- actual image data stored here
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 
 //to insert data 
 // try {
@@ -32,4 +44,62 @@
 //     console.error("Error fetching records", err.stack);
 //     res.status(500).send('Database error');
 // }
+
+//Multer Setup (store image in memory, so we can insert into DB)
+const express = require('express');
+const multer = require('multer');
+const { Pool } = require('pg');
+
+const app = express();
+app.use(express.json());
+
+// PostgreSQL connection
+const db = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'yourdbname',
+  password: 'yourpassword',
+  port: 5432,
+});
+
+// Multer setup for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
+//Insert record into meresahar
+app.post('/upload', upload.single('image'), async (req, res) => {
+  try {
+    const { username, category, description, latitude, longitude } = req.body;
+    const imageBuffer = req.file.buffer; // multer keeps uploaded file in memory
+
+    const query = `
+      INSERT INTO meresahar (username, category, description, latitude, longitude, image)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+
+    await db.query(query, [username, category, description, latitude, longitude, imageBuffer]);
+
+    res.send('Record added successfully into meresahar!');
+  } catch (err) {
+    console.error("Error inserting record", err);
+    res.status(500).send('Database error');
+  }
+});
+
+
+//Fetch and return image from DB
+app.get('/meresahar/:id/image', async (req, res) => {
+  try {
+    const result = await db.query('SELECT image FROM meresahar WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).send('Image not found');
+
+    const image = result.rows[0].image;
+    res.writeHead(200, { 'Content-Type': 'image/jpeg' }); // adjust type if needed
+    res.end(image);
+  } catch (err) {
+    console.error("Error fetching image", err);
+    res.status(500).send('Database error');
+  }
+});
 
