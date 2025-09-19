@@ -18,7 +18,7 @@ document.getElementById("getLoc").addEventListener("click", () => {
 
   if (!navigator.geolocation) {
     alert("Geolocation not supported");
-    return;0
+    return;
   }
 
   navigator.geolocation.getCurrentPosition(success, error);
@@ -51,55 +51,66 @@ document.getElementById("getLoc").addEventListener("click", () => {
 
 window.map = map;
 
-// ✅ Camera functionality
+// ==== Camera functionality ====
+
+// Elements from index.ejs
 const cameraBtn = document.getElementById("cameraBtn");
-const cameraContainer = document.getElementById("cameraContainer");
-const cameraPreview = document.getElementById("cameraPreview");
+const cameraOptions = document.getElementById("cameraOptions");
+const frontCam = document.getElementById("frontCam");
+const backCam = document.getElementById("backCam");
+const video = document.getElementById("video");
 const captureBtn = document.getElementById("captureBtn");
-const cameraCanvas = document.getElementById("cameraCanvas");
-const imageDataInput = document.getElementById("imageData");
+const canvas = document.getElementById("canvas");
 const photoPreview = document.getElementById("photoPreview");
-const previewImg = document.getElementById("previewImg");
+const capturedImage = document.getElementById("capturedImage");
 
 let stream;
 
-// Open camera (front/back)
-cameraBtn.addEventListener("click", async () => {
-  const choice = confirm("Click OK for Front Camera, Cancel for Back Camera");
+// Show options when "Open Camera" is clicked
+cameraBtn.addEventListener("click", () => {
+  cameraOptions.classList.remove("hidden");
+});
 
-  const constraints = {
-    video: { facingMode: choice ? "user" : "environment" },
-    audio: false
-  };
+// Start camera with chosen facing mode
+async function startCamera(facingMode) {
+  const constraints = { video: { facingMode }, audio: false };
 
   try {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
-    cameraPreview.srcObject = stream;
-    cameraContainer.style.display = "block";
+    video.srcObject = stream;
+    video.classList.remove("hidden");
+    captureBtn.classList.remove("hidden");
+    cameraOptions.classList.add("hidden"); // hide buttons after selection
   } catch (err) {
     alert("Camera access denied or not available.");
     console.error(err);
   }
-});
+}
+
+// Handle front/back camera buttons
+frontCam.addEventListener("click", () => startCamera("user"));
+backCam.addEventListener("click", () => startCamera("environment"));
 
 // Capture photo
 captureBtn.addEventListener("click", () => {
-  const context = cameraCanvas.getContext("2d");
-  cameraCanvas.width = cameraPreview.videoWidth;
-  cameraCanvas.height = cameraPreview.videoHeight;
-  context.drawImage(cameraPreview, 0, 0, cameraCanvas.width, cameraCanvas.height);
+  const context = canvas.getContext("2d");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   // Convert to Base64
-  const imageData = cameraCanvas.toDataURL("image/png");
-  imageDataInput.value = imageData;
+  const imageData = canvas.toDataURL("image/png");
+  capturedImage.value = imageData;
 
   // Show preview
-  previewImg.src = imageData;
-  photoPreview.style.display = "block";
+  photoPreview.src = imageData;
+  photoPreview.classList.remove("hidden");
 
   // Stop camera
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
   }
-  cameraContainer.style.display = "none";
+
+  video.classList.add("hidden");
+  captureBtn.classList.add("hidden");
 });
