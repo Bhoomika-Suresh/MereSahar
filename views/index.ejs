@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title><%= title %></title>
+<head>
+  <meta charset="UTF-8" />
+  <title>MereSahar - User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+</head>
+<body>
+  <!-- Full width header -->
+  <header class="main-header">
+    <h1>📍 Civic Issue Reporting</h1>
+  </header>
 
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>Civic Issue Reporting</h1>
-      </header>
-
-      <!-- Single form for everything -->
-      <form action="/report" method="POST" id="issueForm">
-        <h2>Report an Issue</h2>
-
-        <!-- Name input -->
+  <!-- Content split: Form + Map -->
+  <div class="dashboard">
+    <!-- Left: Form -->
+    <div class="form-section">
+      <h2>Report an Issue</h2>
+      <form action="/report" method="POST" id="issueForm" class="issue-form">
+        <!-- Name -->
         <label for="username">Your Name</label>
         <input type="text" name="username" id="username" required placeholder="Enter your name" />
-
-        <!-- Get Location button -->
-        <button type="button" id="getLoc">Get My Location</button>
-
-        <!-- Hidden latitude & longitude (auto-filled) -->
-        <input type="hidden" name="latitude" id="issueLat" />
-        <input type="hidden" name="longitude" id="issueLng" />
 
         <!-- Category -->
         <label for="category">Category</label>
@@ -44,20 +39,45 @@
         <label for="description">Description</label>
         <textarea name="description" id="description" placeholder="Describe the issue..." required></textarea>
 
-        <!-- Submit button -->
-        <button type="submit">Submit Issue</button>
-      </form>
+        <!-- Camera -->
+        <div class="camera-section">
+          <label>Capture Image (Optional)</label>
+          <button type="button" id="cameraBtn">📷 Open Camera</button>
+          <div id="cameraOptions" class="hidden">
+            <button type="button" id="frontCam">Front Camera</button>
+            <button type="button" id="backCam">Back Camera</button>
+          </div>
+          <video id="video" autoplay playsinline class="hidden"></video>
+          <button type="button" id="captureBtn" class="hidden">📸 Capture</button>
+          <canvas id="canvas" class="hidden"></canvas>
+          <img id="photoPreview" class="hidden" alt="Captured Image" />
+          <input type="hidden" name="image" id="capturedImage" />
+        </div>
 
-      <!-- Map -->
-      <div id="map"></div>
+        <!-- Hidden location fields -->
+        <input type="hidden" name="latitude" id="issueLat" />
+        <input type="hidden" name="longitude" id="issueLng" />
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="button" id="getLoc" class="location-btn">📍 Get My Location</button>
+          <button type="submit" class="submit-btn">🚀 Submit Issue</button>
+        </div>
+      </form>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="/js/location.js"></script>
+    <!-- Right: Map -->
+    <div class="map-section">
+      <div id="map"></div>
+    </div>
+  </div>
 
-    <script>
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script src="/js/location.js"></script>
+
+  <script>
       // Existing issues passed from server
       const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
 
@@ -76,5 +96,5 @@
 
       map.addLayer(issueMarkers);
     </script>
-  </body>
+</body>
 </html>
