@@ -3,12 +3,17 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { Pool } from "pg";
+import multer from "multer";
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
+
 const port = 3000;
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // PostgreSQL connection setup using environment variables
 const db = new Pool({
@@ -44,53 +49,105 @@ app.set("views", path.join(__dirname, "views"));
 // Serve static files (CSS, images, JS)
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
+//app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+//app.use(express.json({ limit: "10mb" }));
 
 let issues;
 
 // Routes
 app.get("/", async (req, res) => {
-  // to retrive Data
   try {
-    const query = `SELECT * FROM meresahar`;
-    const result = await db.query(query);
-    //res.json(result.rows); // send all rows as JSON
-    res.render("index", {
-    title: "My EJS App",
-    issues: result.rows,
-  });
+    const result = await db.query("SELECT * FROM meresahar ORDER BY id DESC");
+
+    // Convert BYTEA images to base64 for frontend
+    const issues = result.rows.map((row) => {
+      let base64Image = null;
+      if (row.image) {
+        const buffer = Buffer.isBuffer(row.image) ? row.image : Buffer.from(row.image);
+        base64Image = `data:image/png;base64,${buffer.toString("base64")}`;
+      }
+      return {
+        id: row.id,
+        username: row.username,
+        category: row.category,
+        description: row.description,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        status: row.status || "Pending",
+        image: base64Image,
+      };
+    });
+
+    res.render("index", { title: "MereSahar Dashboard", issues });
   } catch (err) {
     console.error("Error fetching records", err.stack);
     res.status(500).send("Database error");
   }
 });
 
+
 //location recever router
-app.post("/report", async (req, res) => {
+app.post("/report", upload.single("image"), async (req, res) => {
   const { username, category, description, latitude, longitude } = req.body;
-  console.log("User's Location:", latitude, longitude);
 
   console.log(
-    `User's Data => Name: ${username},category: ${category},description: ${description}, Latitude: ${latitude}, Longitude: ${longitude}`
+    `User's Data => Name: ${username}, category: ${category}, description: ${description}, Latitude: ${latitude}, Longitude: ${longitude}`
   );
-  //to insert data
+
+  let imageBuffer = null;
+
+  if (req.file) {
+    imageBuffer = req.file.buffer; // ✅ use the buffer from multer directly
+  }
+
   try {
-    const query = `
-      INSERT INTO meresahar (username, category, description, latitude, longitude)
-      VALUES ($1, $2, $3, $4, $5)
-    `;
-    await db.query(query, [
-      username,
-      category,
-      description,
-      latitude,
-      longitude,
-    ]);
-    res.send("Record added successfully!");
+    await db.query(
+      `INSERT INTO meresahar (username, category, description, latitude, longitude, image)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [username, category, description, latitude, longitude, imageBuffer]
+    );
+    //res.send("Record added successfully!");
+    res.redirect("/");
   } catch (err) {
     console.error("Error inserting record", err.stack);
     res.status(500).send("Database error");
   }
 });
+
+
+app.get("/show", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM meresahar ORDER BY id DESC");
+
+    // Convert BYTEA image to base64 for each report
+    const reports = result.rows.map((row) => {
+      let base64Image = null;
+
+      if (row.image) {
+        // Check if row.image is a Buffer
+        const buffer = Buffer.isBuffer(row.image) ? row.image : Buffer.from(row.image);
+        base64Image = `data:image/png;base64,${buffer.toString("base64")}`;
+      }
+
+      return {
+        id: row.id,
+        username: row.username,
+        category: row.category,
+        description: row.description,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        image: base64Image,
+      };
+    });
+
+    res.render("reports", { reports });
+  } catch (err) {
+    console.error("Error fetching reports:", err);
+    res.status(500).send("Error fetching reports");
+  }
+});
+
+
 
 // Start server
 app.listen(port, () => {

@@ -14,30 +14,31 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"
     />
+    <style>
+      #map { height: 600px; width: 100%; margin-top: 20px; }
+      .popup-img { max-width: 200px; border-radius: 6px; display: block; margin-top: 5px; }
+      .hidden { display: none; }
+    </style>
   </head>
   <body>
-    <!-- Full width header -->
     <header class="main-header">
       <h1>📍 Civic Issue Reporting</h1>
     </header>
 
-    <!-- Content split: Form + Map -->
     <div class="dashboard">
       <!-- Left: Form -->
       <div class="form-section">
         <h2>Report an Issue</h2>
-        <form action="/report" method="POST" id="issueForm" class="issue-form">
-          <!-- Name -->
+        <form
+          action="/report"
+          method="POST"
+          enctype="multipart/form-data"
+          id="issueForm"
+          class="issue-form"
+        >
           <label for="username">Your Name</label>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            required
-            placeholder="Enter your name"
-          />
+          <input type="text" name="username" id="username" required placeholder="Enter your name" />
 
-          <!-- Category -->
           <label for="category">Category</label>
           <select name="category" id="category" required>
             <option value="">-- Select Category --</option>
@@ -47,16 +48,9 @@
             <option value="Dustbin Overflow">Dustbin Overflow</option>
           </select>
 
-          <!-- Description -->
           <label for="description">Description</label>
-          <textarea
-            name="description"
-            id="description"
-            placeholder="Describe the issue..."
-            required
-          ></textarea>
+          <textarea name="description" id="description" placeholder="Describe the issue..." required></textarea>
 
-          <!-- Camera -->
           <div class="camera-section">
             <label>Capture Image (Optional)</label>
             <button type="button" id="cameraBtn">📷 Open Camera</button>
@@ -66,24 +60,18 @@
             </div>
 
             <video id="video" autoplay playsinline class="hidden"></video>
-            <button type="button" id="captureBtn" class="hidden">
-              📸 Capture
-            </button>
+            <button type="button" id="captureBtn" class="hidden">📸 Capture</button>
             <canvas id="canvas" class="hidden"></canvas>
             <img id="photoPreview" class="hidden" alt="Captured Image" />
-            <input type="hidden" name="image" id="capturedImage" />
+            <input type="file" name="image" id="imageInput" class="hidden" accept="image/*" />
           </div>
 
-          <!-- Hidden location fields -->
-          <input type="hidden" name="latitude" id="issueLat" />
-          <input type="hidden" name="longitude" id="issueLng" />
+          <input type="hidden" name="latitude" id="issueLat" required />
+          <input type="hidden" name="longitude" id="issueLng" required />
 
-          <!-- Actions -->
           <div class="form-actions">
-            <button type="button" id="getLoc" class="location-btn">
-              📍 Get My Location
-            </button>
-            <button type="submit" class="submit-btn">🚀 Submit Issue</button>
+            <button type="button" id="getLoc">📍 Get My Location</button>
+            <button type="submit">🚀 Submit Issue</button>
           </div>
         </form>
       </div>
@@ -97,25 +85,24 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="/js/location.js"></script>
+    
+    <!-- Modular JS -->
+    <script type="module">
+      import { initializeMap } from "/js/map.js";
+      import { initGeolocation } from "/js/geolocation.js";
+      import { initCamera } from "/js/camera.js";
 
-    <script>
-      // Existing issues passed from server
-      const issues = JSON.parse("<%- JSON.stringify(issues || []) %>");
+      // Issues passed from server
+      const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
 
-      const issueMarkers = L.markerClusterGroup();
+      // Initialize map with markers
+      const map = initializeMap(issues);
 
-      issues.forEach((issue) => {
-        const marker = L.marker([issue.latitude, issue.longitude]).bindPopup(
-          `<b>${issue.username || "Anonymous"}</b><br>
-             <b>Category:</b> ${issue.category}<br>
-             <b>Description:</b> ${issue.description}<br>
-             <b>Status:</b> ${issue.status}`
-        );
-        issueMarkers.addLayer(marker);
-      });
+      // Initialize geolocation for "Get My Location"
+      initGeolocation(map);
 
-      map.addLayer(issueMarkers);
+      // Initialize camera functionality
+      initCamera();
     </script>
   </body>
 </html>
