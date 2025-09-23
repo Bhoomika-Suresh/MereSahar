@@ -128,6 +128,72 @@ app.post("/report", upload.single("image"), async (req, res) => {
   }
 });
 
+// Admin dashboard
+app.get("/admin", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM meresahar ORDER BY id DESC");
+
+    const issues = result.rows.map((row) => {
+      let beforeImage = null;
+      let afterImage = null;
+
+      if (row.image) {
+        const buffer = Buffer.isBuffer(row.image) ? row.image : Buffer.from(row.image);
+        beforeImage = `data:image/png;base64,${buffer.toString("base64")}`;
+      }
+
+      if (row.after_image) {
+        const buffer = Buffer.isBuffer(row.after_image) ? row.after_image : Buffer.from(row.after_image);
+        afterImage = `data:image/png;base64,${buffer.toString("base64")}`;
+      }
+
+      return {
+        id: row.id,
+        username: row.username,
+        category: row.category,
+        description: row.description,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        status: row.status || "Pending",
+        image: beforeImage,
+        after_image: afterImage,
+      };
+    });
+
+    res.render("admin", { issues });
+  } catch (err) {
+    console.error("Error fetching records", err.stack);
+    res.status(500).send("Database error");
+  }
+});
+
+// Update issue (status + after image)
+app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  let afterImageBuffer = null;
+  if (req.file) {
+    afterImageBuffer = req.file.buffer;
+  }
+
+  try {
+    if (afterImageBuffer && status === "Completed") {
+      await db.query(
+        "UPDATE meresahar SET status = $1, after_image = $2 WHERE id = $3",
+        [status, afterImageBuffer, id]
+      );
+    } else {
+      await db.query("UPDATE meresahar SET status = $1 WHERE id = $2", [status, id]);
+    }
+
+    res.redirect("/admin");
+  } catch (err) {
+    console.error("Error updating record", err.stack);
+    res.status(500).send("Database error");
+  }
+});
+
 // -----------------------------
 // START SERVER
 // -----------------------------
