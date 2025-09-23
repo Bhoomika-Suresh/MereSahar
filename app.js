@@ -78,11 +78,19 @@ app.get("/user", async (req, res) => {
 
     // Convert BYTEA images to base64 for frontend display
     const issues = result.rows.map((row) => {
-      let base64Image = null;
+      let base64Before = null;
+      let base64After = null;
+
       if (row.image) {
         const buffer = Buffer.isBuffer(row.image) ? row.image : Buffer.from(row.image);
-        base64Image = `data:image/png;base64,${buffer.toString("base64")}`;
+        base64Before = `data:image/png;base64,${buffer.toString("base64")}`;
       }
+
+      if (row.after_image) {
+        const buffer = Buffer.isBuffer(row.after_image) ? row.after_image : Buffer.from(row.after_image);
+        base64After = `data:image/png;base64,${buffer.toString("base64")}`;
+      }
+
       return {
         id: row.id,
         username: row.username,
@@ -91,7 +99,8 @@ app.get("/user", async (req, res) => {
         latitude: row.latitude,
         longitude: row.longitude,
         status: row.status || "Pending",
-        image: base64Image,
+        image: base64Before,
+        after_image: base64After,
       };
     });
 
