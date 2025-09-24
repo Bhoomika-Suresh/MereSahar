@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - MereSahar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/faq.css">
+
+</head>
+<body>
+  <!-- Header with Menu -->
+  <header>
+    <a href="home.html" class="logo">
+      <i class="fas fa-city"></i>
+      <span>MereSahar</span>
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    <nav id="nav">
+      <ul>
+        <li><a href="home.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="faq.html" class="active"><i class="fas fa-question-circle"></i> FAQ</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1>Frequently Asked Questions</h1>
+    
+    <div class="faq-intro">
+      <p>Find answers to the most common questions about MereSahar. If you don't find what you're looking for, feel free to contact our support team.</p>
+      
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="faqSearch" placeholder="Search for questions or keywords...">
+      </div>
+      
+      <div class="faq-categories">
+        <div class="faq-category active" data-category="all">All Questions</div>
+        <div class="faq-category" data-category="reporting">Issue Reporting</div>
+        <div class="faq-category" data-category="municipal">Municipal Services</div>
+        <div class="faq-category" data-category="technical">Technical Support</div>
+      </div>
+    </div>
+    
+    <div class="faq-container">
+      <!-- Issue Reporting Category -->
+      <div class="faq-item" data-categories="reporting">
+        <div class="faq-question">
+          <h3><i class="fas fa-exclamation-circle"></i> How do I report a civic issue?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>To report a civic issue, visit our MereSahar website and click on the "user dashboard" button. Fill the name, Select the appropriate category (like potholes, street light, water overflow, dustbin overflow), provide a detailed description, add photos if possible, and specify the location by clicking on get location. Once submitted, you'll receive tracking details to monitor the status of your complaint.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-categories="reporting">
+        <div class="faq-question">
+          <h3><i class="fas fa-history"></i> How long does it take to resolve a reported issue?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>Resolution time depends on the nature and complexity of the issue. Simple problems like garbage collection might be resolved within 24-48 hours, while infrastructure repairs could take several days or weeks. You can track the progress of your complaint in real-time through your dashboard, and you'll receive notifications at each stage of the resolution process.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-categories="reporting">
+        <div class="faq-question">
+          <h3><i class="fas fa-eye"></i> Can I report issues anonymously?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>Yes, but you should fill name as anonymous, & report issues anonymously. However, you can track your complaints, receive updates, and build a reputation as an active citizen. Anonymous reports are processed by the reporter.</p>
+        </div>
+      </div>
+      
+      <!-- Municipal Services Category -->
+      <div class="faq-item" data-categories="municipal">
+        <div class="faq-question">
+          <h3><i class="fas fa-building"></i> Which municipal services can I access through MereSahar?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>MereSahar provides access to various municipal services including potholes, street light, water overflow, dustbin overflow. These services are made available through our partnerships with municipal corporations.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-categories="municipal">
+        <div class="faq-question">
+          <h3><i class="fas fa-receipt"></i> Can I pay my property tax through MereSahar?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>No, because it is only for reporting the issues not to pay property tax amount for municipal corporations.</p>
+        </div>
+      </div>
+      
+      <!-- Technical Support Category -->
+      <div class="faq-item" data-categories="technical">
+        <div class="faq-question">
+          <h3><i class="fas fa-mobile-alt"></i> Is there a mobile app for MereSahar?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>No, MereSahar is available as a website for both iOS and Android devices. You can visit the website using link. The website offers all the features of the platform with additional benefits like tracking notifications and location-based services.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-categories="technical">
+        <div class="faq-question">
+          <h3><i class="fas fa-shield-alt"></i> How secure is my data on MereSahar?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>We are not taking your data security very seriously. MereSahar gives direct user dashboard to protect your personal information. We comply with data protection regulations and never share your data the name also with third parties without your consent. Regular security audits ensure our platform remains safe and secure.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" data-categories="technical">
+        <div class="faq-question">
+          <h3><i class="fas fa-wifi"></i> What should I do if the website is not loading properly?</h3>
+          <i class="fas fa-chevron-down faq-toggle"></i>
+        </div>
+        <div class="faq-answer">
+          <p>First, try refreshing the page. If the problem persists, clear your browser cache and cookies, or try accessing the site in a different browser. If you're using the website, try updating to the latest version of chrome. If none of these solutions work, please contact our technical support team with details about the issue.</p>
+        </div>
+      </div>
+      
+      <div class="no-results" id="noResults">
+        <i class="fas fa-search fa-3x" style="margin-bottom: 1rem; color: #ccc;"></i>
+        <h3>No results found</h3>
+        <p>Try searching with different keywords or browse the categories above.</p>
+      </div>
+    </div>
+    
+    <div class="contact-prompt">
+      <h2>Still have questions?</h2>
+      <p>If you couldn't find the answer to your question in our FAQ, our support team is ready to help you.</p>
+      <a href="contact.html" class="btn">
+        <span>Contact Support</span>
+        <i class="fas fa-headset"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>MereSahar</h3>
+        <p>A platform for citizens to report civic issues and for administrators to efficiently manage and resolve them.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="home.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+          <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+          <li><a href="faq.html"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Contact Info</h3>
+        <ul class="footer-links">
+          <li><i class="fas fa-map-marker-alt"></i> Gitam University, Nagdenalli, Dodballapur 561203</li>
+          <li><i class="fas fa-phone"></i> +91 8073588676</li>
+          <li><i class="fas fa-envelope"></i> info@meresahar.com</li>
+          <li><i class="fas fa-clock"></i> 24/7 Support Available</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2025 MereSahar. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('nav');
+    
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      
+      // Change icon based on menu state
+      const icon = menuToggle.querySelector('i');
+      if (nav.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+      } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
+    
+    // FAQ toggle functionality
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        item.classList.toggle('active');
+      });
+    });
+    
+    // FAQ search functionality
+    const faqSearch = document.getElementById('faqSearch');
+    const noResults = document.getElementById('noResults');
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqSearch.addEventListener('input', () => {
+      const searchTerm = faqSearch.value.toLowerCase();
+      let visibleCount = 0;
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question h3').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer p').textContent.toLowerCase();
+        
+        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      // Show/hide no results message
+      if (visibleCount === 0 && searchTerm !== '') {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    });
+    
+    // FAQ category filtering
+    document.querySelectorAll('.faq-category').forEach(category => {
+      category.addEventListener('click', () => {
+        // Update active category
+        document.querySelectorAll('.faq-category').forEach(cat => {
+          cat.classList.remove('active');
+        });
+        category.classList.add('active');
+        
+        const selectedCategory = category.getAttribute('data-category');
+        
+        faqItems.forEach(item => {
+          if (selectedCategory === 'all' || item.getAttribute('data-categories').includes(selectedCategory)) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        
+        // Reset search
+        faqSearch.value = '';
+        noResults.style.display = 'none';
+      });
+    });
+    
+    // Add animation to elements on scroll
+    document.addEventListener('DOMContentLoaded', () => {
+      const animatedElements = document.querySelectorAll('.faq-item, .contact-prompt');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animation = 'fadeIn 1s ease forwards';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        observer.observe(el);
+      });
+    });
+  </script>
+</body>
+</html>
