@@ -20,6 +20,13 @@
       width: 120px; height: 100px; object-fit: cover;
       border-radius: 6px; border: 1px solid #ccc;
     }
+    .placeholder {
+      font-size: 13px; color: #666; background: #f9f9f9;
+      border: 1px dashed #bbb; border-radius: 4px;
+      padding: 6px; width: 120px; height: 100px;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+    }
     .popup-content form {
       display: flex; flex-direction: column; gap: 6px; margin-top: 10px;
     }
@@ -73,6 +80,38 @@
     };
 
     issues.forEach(issue => {
+      // Handle images with placeholder + loading
+      let imagesHtml = "";
+      if (!issue.has_before && !issue.has_after) {
+        imagesHtml = `<div class="placeholder">No images uploaded yet</div>`;
+      } else {
+        if (issue.has_before) {
+          imagesHtml += `
+            <div>
+              <div class="placeholder">Before image is loading...</div>
+              <img src="/images/${issue.id}/before" 
+                   alt="Before Image" 
+                   onload="this.previousElementSibling.remove()" 
+                   onerror="this.previousElementSibling.textContent='Before image failed to load'"/>
+            </div>`;
+        } else {
+          imagesHtml += `<div class="placeholder">No before image</div>`;
+        }
+
+        if (issue.has_after) {
+          imagesHtml += `
+            <div>
+              <div class="placeholder">After image is loading...</div>
+              <img src="/images/${issue.id}/after" 
+                   alt="After Image" 
+                   onload="this.previousElementSibling.remove()" 
+                   onerror="this.previousElementSibling.textContent='After image failed to load'"/>
+            </div>`;
+        } else {
+          imagesHtml += `<div class="placeholder">No after image</div>`;
+        }
+      }
+
       const popupHtml = `
         <div class="popup-content">
           <h3>${issue.category}</h3>
@@ -80,10 +119,7 @@
           <p><b>Description:</b> ${issue.description}</p>
           <p><b>Status:</b> ${issue.status}</p>
 
-          <div class="images">
-            ${issue.image ? `<img src="${issue.image}" alt="Before" />` : ""}
-            ${issue.after_image ? `<img src="${issue.after_image}" alt="After" />` : ""}
-          </div>
+          <div class="images">${imagesHtml}</div>
 
           <form action="/admin/update/${issue.id}" method="POST" enctype="multipart/form-data">
             <label>Status:</label>
