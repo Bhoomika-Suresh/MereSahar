@@ -5,74 +5,82 @@ export const initializeMap = (issues) => {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
 
-  const markers = L.markerClusterGroup();
+  const markers = L.markerClusterGroup({
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    chunkedLoading: true,
+    maxClusterRadius: 50,
+  });
 
   const getIcon = (status) => {
-    let color = "red";
-    if (status === "Ongoing") color = "yellow";
-    if (status === "Completed") color = "green";
+    let color = "#e74c3c"; // Pending - red
+    if (status === "Ongoing") color = "#f39c12"; // Ongoing - orange
+    if (status === "Completed") color = "#2ecc71"; // Completed - green
+
     return L.divIcon({
       className: "custom-marker",
-      html: `<i style="background:${color}; width:16px; height:16px; display:block; border-radius:50%; border:2px solid white;"></i>`,
-      iconSize: [16, 16],
+      html: `<i style="background:${color}; width:20px; height:20px; display:block; border-radius:50%; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.3);"></i>`,
+      iconSize: [20, 20],
     });
   };
 
   issues.forEach((issue) => {
     if (!issue.latitude || !issue.longitude) return;
 
-    const popupContainer = document.createElement("div");
-    popupContainer.innerHTML = `
-      <b>${issue.username || "Anonymous"}</b><br>
-      <b>Category:</b> ${issue.category}<br>
-      <b>Description:</b> ${issue.description}<br>
-      <b>Status:</b> ${issue.status}<br>
-      <b>Location:</b> (${issue.latitude}, ${issue.longitude})<br>
-      <div style="display:flex; gap:6px; margin-top:6px;" class="image-container"></div>
+    const popupHtml = `
+      <div class="popup-card">
+        <div class="popup-header">
+          <div class="popup-title">
+            <span>${issue.username || "Anonymous"}</span>
+            <span class="popup-category">${issue.category}</span>
+          </div>
+        </div>
+        <div class="popup-content">
+          <div class="popup-detail">
+            <span class="popup-label">Status:</span>
+            <span class="popup-value">
+              <span class="status-badge status-${(issue.status||'pending').toLowerCase()}">
+                ${issue.status || 'Pending'}
+              </span>
+            </span>
+          </div>
+          <div class="popup-detail">
+            <span class="popup-label">Description:</span>
+            <span class="popup-value">${issue.description}</span>
+          </div>
+          <div class="popup-detail">
+            <span class="popup-label">Location:</span>
+            <span class="popup-value location-coords">${Number(issue.latitude).toFixed(4)}, ${Number(issue.longitude).toFixed(4)}</span>
+          </div>
+          <div class="popup-images">
+            <div class="images-section-title">Images</div>
+            <div class="image-grid">
+              ${issue.has_before ? `
+                <div class="image-wrapper">
+                  <span class="img-loading">Loading Before...</span>
+                  <img class="popup-img" src="/images/${issue.id}/before" alt="Before Image" 
+                    onload="this.previousElementSibling.remove(); this.style.display='block';" 
+                    onerror="this.previousElementSibling.textContent='Before image not available'; this.style.display='block';" 
+                    style="display:none;"/>
+                </div>` : ''}
+              ${issue.has_after ? `
+                <div class="image-wrapper">
+                  <span class="img-loading">Loading After...</span>
+                  <img class="popup-img" src="/images/${issue.id}/after" alt="After Image" 
+                    onload="this.previousElementSibling.remove(); this.style.display='block';" 
+                    onerror="this.previousElementSibling.textContent='After image not available'; this.style.display='block';" 
+                    style="display:none;"/>
+                </div>` : ''}
+              ${!issue.has_before && !issue.has_after ? `<div class="no-images">No images uploaded yet</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
     `;
 
-    const imgContainer = popupContainer.querySelector(".image-container");
-
-    // Helper: create wrapper
-    const createImageWrapper = (id, type, label) => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "img-wrapper";
-      wrapper.innerHTML = `<span class="img-loading">Loading ${label}...</span>`;
-
-      const img = document.createElement("img");
-      img.className = "popup-img";
-      img.style.display = "none";
-      img.src = `/images/${id}/${type}`;
-
-      img.addEventListener("load", () => {
-        wrapper.querySelector(".img-loading").style.display = "none";
-        img.style.display = "block";
-      });
-
-      img.addEventListener("error", () => {
-        wrapper.querySelector(".img-loading").textContent = `${label} image not available`;
-      });
-
-      wrapper.appendChild(img);
-      return wrapper;
-    };
-
-    // CASE HANDLING
-    if (!issue.has_before && !issue.has_after) {
-      // Case 1: No images at all
-      imgContainer.innerHTML = `<span style="color:gray;">No images uploaded yet</span>`;
-    } else {
-      if (issue.has_before) {
-        imgContainer.appendChild(createImageWrapper(issue.id, "before", "Before"));
-      }
-      if (issue.has_after) {
-        imgContainer.appendChild(createImageWrapper(issue.id, "after", "After"));
-      }
-    }
-
-    const marker = L.marker([issue.latitude, issue.longitude], {
-      icon: getIcon(issue.status),
-    }).bindPopup(popupContainer);
+    const marker = L.marker([issue.latitude, issue.longitude], { icon: getIcon(issue.status) })
+                    .bindPopup(popupHtml);
 
     markers.addLayer(marker);
   });
