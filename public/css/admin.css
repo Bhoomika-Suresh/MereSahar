@@ -9,6 +9,9 @@
 body {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
+  line-height: 1.5;
+  color: #2d3436;
+  overflow-x: hidden;
 }
 
 /* ================= VARIABLES ================= */
@@ -17,8 +20,8 @@ body {
   --accent: #ff6b6b;
   --dark: #2d3436;
   --light: #ffffff;
-  --header-bg: rgba(255,255,255,0.95);
-  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s ease;
   --header-height: 70px;
 }
@@ -33,7 +36,7 @@ header {
   z-index: 10000;
   background: var(--header-bg);
   backdrop-filter: blur(10px);
-  padding: 0 2rem;
+  padding: 0 1rem;
   box-shadow: var(--shadow);
   display: flex;
   justify-content: space-between;
@@ -96,7 +99,7 @@ nav a:hover:after {
 }
 
 /* ================= RESPONSIVE NAV ================= */
-@media(max-width:768px) {
+@media (max-width: 768px) {
   nav {
     position: absolute;
     top: var(--header-height);
@@ -104,7 +107,7 @@ nav a:hover:after {
     background: var(--header-bg);
     border-radius: 12px;
     box-shadow: var(--shadow);
-    width: 200px;
+    width: 220px;
     transform: translateX(110%);
     transition: var(--transition);
   }
@@ -133,7 +136,7 @@ nav a:hover:after {
   background: white;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   font-size: 12px;
 }
 .legend h4 {
@@ -157,13 +160,29 @@ nav a:hover:after {
 .leaflet-popup-content-wrapper {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
+
+/* ✅ Fixed height with scroll inside for desktop/laptop */
 .leaflet-popup-content {
   margin: 0;
   padding: 0;
-  width: 360px !important;
+  width: 380px !important;
+  max-height: 420px;
+  overflow-y: auto;
   font-family: 'Poppins', sans-serif;
+}
+
+/* Smooth minimal scrollbar */
+.leaflet-popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
 .popup-card {
@@ -185,7 +204,7 @@ nav a:hover:after {
   margin-bottom: 6px;
 }
 .popup-category {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.8em;
@@ -324,15 +343,25 @@ nav a:hover:after {
 }
 
 @media (max-width: 480px) {
+  header { padding: 0 0.5rem; }
+  .logo { font-size: 1.1rem; }
   .leaflet-popup-content {
-    width: 90% !important;
+    width: 92% !important;
     max-height: 65vh;
+    overflow-y: auto;
   }
   .popup-header { padding: 14px; }
   .popup-title { font-size: 0.95em; }
   .popup-content { padding: 14px; }
+  .filter-section { padding: 10px 12px; }
+  .filter-form { gap: 8px; }
+  .filter-form select,
+  .filter-form button {
+    width: 100%;
+    font-size: 0.85em;
+    padding: 10px;
+  }
 }
-
 
 /* ================= FILTER SECTION ================= */
 .filter-section {
@@ -341,9 +370,9 @@ nav a:hover:after {
   margin-top: var(--header-height);
   box-shadow: var(--shadow);
   border-radius: 12px;
-  position: sticky;
-  top: var(--header-height);
-  z-index: 9999;
+  position: relative; /* ✅ not sticky */
+  top: auto;
+  z-index: 1;
   display: flex;
   justify-content: center;
 }
@@ -392,7 +421,9 @@ nav a:hover:after {
     flex-direction: column;
     align-items: stretch;
   }
-  .filter-form select, .filter-form button {
+  .filter-form select,
+  .filter-form button {
     width: 100%;
   }
 }
+  
