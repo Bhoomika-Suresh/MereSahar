@@ -4,40 +4,57 @@
   <meta charset="UTF-8" />
   <title>MereSahar - Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
+  <!-- ✅ Navbar -->
   <header>
-    <h1>🛠️ Admin Dashboard - Manage Issues</h1>
+    <a href="/" class="logo">🛠️ MereSahar Admin</a>
+    <button class="menu-toggle" aria-label="Toggle Menu">☰</button>
+    <nav>
+      <ul>
+        <li><a href="/admin">Dashboard</a></li>
+        <li><a href="/admin/reports">Reports</a></li>
+        <li><a href="/admin/settings">Settings</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
   </header>
 
+  <!-- ✅ Main Map -->
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
   <script>
-    // issues from EJS backend
-    //const issues = <%- JSON.stringify(issues || []) %>;
+    // issues from backend
     const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
 
     const map = L.map("map").setView([20.5937, 78.9629], 5);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution:"&copy; OpenStreetMap contributors" }).addTo(map);
 
-    const markers = L.markerClusterGroup({ spiderfyOnMaxZoom:true, showCoverageOnHover:false, zoomToBoundsOnClick:true, chunkedLoading:true, maxClusterRadius:50 });
+    const markers = L.markerClusterGroup({
+      spiderfyOnMaxZoom:true, showCoverageOnHover:false, zoomToBoundsOnClick:true, chunkedLoading:true, maxClusterRadius:50
+    });
 
     const getIcon = status => {
-      let color="#e74c3c"; if(status==="Ongoing") color="#f39c12"; if(status==="Completed") color="#2ecc71";
-      return L.divIcon({ className:"custom-marker", html:`<i style="background:${color};width:20px;height:20px;display:block;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></i>`, iconSize:[20,20] });
+      let color="#e74c3c";
+      if(status==="Ongoing") color="#f39c12";
+      if(status==="Completed") color="#2ecc71";
+      return L.divIcon({
+        className:"custom-marker",
+        html:`<i style="background:${color};width:20px;height:20px;display:block;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></i>`,
+        iconSize:[20,20]
+      });
     };
 
     issues.forEach(issue => {
       if(!issue.latitude || !issue.longitude) return;
 
-      // Images
       let imagesHtml="";
       if(!issue.has_before && !issue.has_after){
         imagesHtml=`<div class="no-images">No images uploaded yet</div>`;
@@ -46,13 +63,19 @@
         if(issue.has_before){
           imagesHtml+=`<div class="image-wrapper">
             <span class="img-loading">Loading before image...</span>
-            <img src="/images/${issue.id}/before" class="popup-img" alt="Before Image" onload="this.previousElementSibling.remove(); this.style.display='block';" onerror="this.previousElementSibling.textContent='Before image failed to load'; this.style.display='block';" style="display:none;"/>
+            <img src="/images/${issue.id}/before" class="popup-img" alt="Before Image"
+              onload="this.previousElementSibling.remove(); this.style.display='block';"
+              onerror="this.previousElementSibling.textContent='Before image failed to load'; this.style.display='block';"
+              style="display:none;"/>
           </div>`;
         } else imagesHtml+=`<div class="image-wrapper no-image"><span class="img-loading">No before image</span></div>`;
         if(issue.has_after){
           imagesHtml+=`<div class="image-wrapper">
             <span class="img-loading">Loading after image...</span>
-            <img src="/images/${issue.id}/after" class="popup-img" alt="After Image" onload="this.previousElementSibling.remove(); this.style.display='block';" onerror="this.previousElementSibling.textContent='After image failed to load'; this.style.display='block';" style="display:none;"/>
+            <img src="/images/${issue.id}/after" class="popup-img" alt="After Image"
+              onload="this.previousElementSibling.remove(); this.style.display='block';"
+              onerror="this.previousElementSibling.textContent='After image failed to load'; this.style.display='block';"
+              style="display:none;"/>
           </div>`;
         } else imagesHtml+=`<div class="image-wrapper no-image"><span class="img-loading">No after image</span></div>`;
         imagesHtml+=`</div>`;
@@ -66,8 +89,12 @@
             <div class="popup-user">${issue.username||"Anonymous"}</div>
           </div>
           <div class="popup-content">
-            <div class="popup-detail"><span class="popup-label">Status:</span><span class="popup-value"><span class="status-badge ${statusClass}">${issue.status}</span></span></div>
-            <div class="popup-detail"><span class="popup-label">Description:</span><span class="popup-value">${issue.description}</span></div>
+            <div class="popup-detail"><span class="popup-label">Status:</span>
+              <span class="popup-value"><span class="status-badge ${statusClass}">${issue.status}</span></span>
+            </div>
+            <div class="popup-detail"><span class="popup-label">Description:</span>
+              <span class="popup-value">${issue.description}</span>
+            </div>
             <div class="popup-images"><div class="images-section-title">Issue Images</div>${imagesHtml}</div>
             <div class="popup-form">
               <div class="popup-form-title">Update Issue</div>
@@ -96,19 +123,22 @@
 
     map.addLayer(markers);
 
-    // Legend
     const legend=L.control({position:"bottomright"});
     legend.onAdd=map=>{
       const div=L.DomUtil.create("div","legend");
-      div.style.backgroundColor="white"; div.style.padding="10px"; div.style.borderRadius="5px"; div.style.boxShadow="0 0 15px rgba(0,0,0,0.2)";
       div.innerHTML=`
-        <h4 style="margin:0 0 10px 0; font-size:14px;">Issue Status</h4>
-        <div style="display:flex; align-items:center; margin-bottom:5px;"><i style="background:#e74c3c;width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:5px;"></i><span style="font-size:12px;">Pending</span></div>
-        <div style="display:flex; align-items:center; margin-bottom:5px;"><i style="background:#f39c12;width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:5px;"></i><span style="font-size:12px;">Ongoing</span></div>
-        <div style="display:flex; align-items:center;"><i style="background:#2ecc71;width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:5px;"></i><span style="font-size:12px;">Completed</span></div>`;
+        <h4>Issue Status</h4>
+        <div><i style="background:#e74c3c;"></i> Pending</div>
+        <div><i style="background:#f39c12;"></i> Ongoing</div>
+        <div><i style="background:#2ecc71;"></i> Completed</div>`;
       return div;
     };
     legend.addTo(map);
+
+    // Toggle menu
+    document.querySelector(".menu-toggle").addEventListener("click",()=> {
+      document.querySelector("nav").classList.toggle("active");
+    });
   </script>
 </body>
 </html>

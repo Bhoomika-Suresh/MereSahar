@@ -4,25 +4,42 @@
     <meta charset="UTF-8" />
     <title><%= title %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSS -->
     <link rel="stylesheet" href="/css/user.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <link rel="stylesheet" href="/css/user.css" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
   <body>
-    <!-- Header -->
-    <header class="main-header">📍 Civic Issue Reporting</header>
+    <!-- Header with Menu -->
+    <header>
+      <a href="/" class="logo">
+        <i class="fas fa-city"></i>
+        <span>MereSahar</span>
+      </a>
+      
+      <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav id="nav">
+        <ul>
+          <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+          <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+          <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+        </ul>
+      </nav>
+    </header>
 
     <!-- Dashboard split -->
     <div class="dashboard">
-      
       <!-- Left: Form Section -->
       <div class="form-section">
         <h2>Report an Issue</h2>
         <form action="/report" method="POST" enctype="multipart/form-data" id="issueForm" class="issue-form">
-
           <label for="username">Name</label>
           <input type="text" name="username" id="username" required placeholder="Your Name"/>
 
@@ -69,6 +86,7 @@
         <div id="map"></div>
       </div>
     </div>
+
     <footer>
       this is footer
     </footer>
@@ -77,6 +95,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
+    <!-- JS Modules -->
     <script type="module">
       import { initializeMap } from "/js/map.js";
       import { initGeolocation } from "/js/geolocation.js";
@@ -86,6 +105,18 @@
       const map = initializeMap(issues);
       initGeolocation(map);
       initCamera();
+    </script>
+
+    <!-- Navbar toggle -->
+    <script>
+      const menuToggle = document.getElementById('menuToggle');
+      const nav = document.getElementById('nav');
+      menuToggle.addEventListener('click', () => {
+        nav.classList.toggle('active');
+        const icon = menuToggle.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+      });
     </script>
   </body>
 </html>
