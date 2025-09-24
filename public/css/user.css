@@ -343,6 +343,7 @@ button {
     display: block;
   }
 }
+
 /* ================= MOBILE FRIENDLY ================= */
 @media (max-width: 480px) {
   body {
@@ -401,18 +402,21 @@ button {
     font-size: 0.9rem;
   }
 
-  /* Map height on mobile */
+  /* Fix Map height on mobile */
   .map-section {
-    min-height: 260px;
+    min-height: 740px;
   }
 
   #map {
-    min-height: 240px;
+    min-height: 340px;
+    border-radius: 8px;
   }
 
   /* Popup responsiveness */
   .leaflet-popup-content {
-    width: 260px !important;
+    width: 90% !important;
+    max-height: 70vh;
+    overflow-y: auto;
     font-size: 0.85em;
   }
 
