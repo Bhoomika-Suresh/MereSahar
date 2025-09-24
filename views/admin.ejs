@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
-  <!-- ✅ Navbar -->
+
   <header>
     <a href="/" class="logo">🛠️ MereSahar Admin</a>
     <button class="menu-toggle" aria-label="Toggle Menu">☰</button>
@@ -25,31 +25,26 @@
     </nav>
   </header>
 
-  <!-- ✅ Main Map -->
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
   <script>
-    // issues from backend
+    //const issues = <%- JSON.stringify(issues || []) %>;
     const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
 
     const map = L.map("map").setView([20.5937, 78.9629], 5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution:"&copy; OpenStreetMap contributors" }).addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
 
-    const markers = L.markerClusterGroup({
-      spiderfyOnMaxZoom:true, showCoverageOnHover:false, zoomToBoundsOnClick:true, chunkedLoading:true, maxClusterRadius:50
-    });
+    const markers = L.markerClusterGroup({ spiderfyOnMaxZoom:true, showCoverageOnHover:false, zoomToBoundsOnClick:true, chunkedLoading:true, maxClusterRadius:50 });
 
-    const getIcon = status => {
-      let color="#e74c3c";
-      if(status==="Ongoing") color="#f39c12";
-      if(status==="Completed") color="#2ecc71";
-      return L.divIcon({
-        className:"custom-marker",
-        html:`<i style="background:${color};width:20px;height:20px;display:block;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></i>`,
-        iconSize:[20,20]
-      });
+    const getIcon = (urgency) => {
+      let color = "#2ecc71"; // Low
+      if(urgency === "Medium") color="#f39c12";
+      if(urgency === "High") color="#e74c3c";
+      return L.divIcon({ className:"custom-marker", html:`<i style="background:${color}; width:20px; height:20px; display:block; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3);"></i>`, iconSize:[20,20] });
     };
 
     issues.forEach(issue => {
@@ -68,7 +63,7 @@
               onerror="this.previousElementSibling.textContent='Before image failed to load'; this.style.display='block';"
               style="display:none;"/>
           </div>`;
-        } else imagesHtml+=`<div class="image-wrapper no-image"><span class="img-loading">No before image</span></div>`;
+        }
         if(issue.has_after){
           imagesHtml+=`<div class="image-wrapper">
             <span class="img-loading">Loading after image...</span>
@@ -77,25 +72,32 @@
               onerror="this.previousElementSibling.textContent='After image failed to load'; this.style.display='block';"
               style="display:none;"/>
           </div>`;
-        } else imagesHtml+=`<div class="image-wrapper no-image"><span class="img-loading">No after image</span></div>`;
+        }
         imagesHtml+=`</div>`;
       }
 
-      const statusClass=`status-${(issue.status||'Pending').toLowerCase()}`;
-      const popupHtml=`
+      const statusClass = `status-${(issue.status||'Pending').toLowerCase()}`;
+      const urgencyClass = `urgency-${(issue.urgency||'Low').toLowerCase()}`;
+
+      const popupHtml = `
         <div class="popup-card">
           <div class="popup-header">
             <div class="popup-title"><span>${issue.category}</span><span class="popup-category">#${issue.id}</span></div>
             <div class="popup-user">${issue.username||"Anonymous"}</div>
           </div>
+
           <div class="popup-content">
             <div class="popup-detail"><span class="popup-label">Status:</span>
               <span class="popup-value"><span class="status-badge ${statusClass}">${issue.status}</span></span>
+            </div>
+            <div class="popup-detail"><span class="popup-label">Urgency:</span>
+              <span class="popup-value"><span class="${urgencyClass}">${issue.urgency || 'Low'}</span></span>
             </div>
             <div class="popup-detail"><span class="popup-label">Description:</span>
               <span class="popup-value">${issue.description}</span>
             </div>
             <div class="popup-images"><div class="images-section-title">Issue Images</div>${imagesHtml}</div>
+
             <div class="popup-form">
               <div class="popup-form-title">Update Issue</div>
               <form action="/admin/update/${issue.id}" method="POST" enctype="multipart/form-data">
@@ -108,37 +110,49 @@
                   </select>
                 </div>
                 <div class="form-group">
+                  <label for="urgency-${issue.id}">Urgency:</label>
+                  <select id="urgency-${issue.id}" name="urgency" required>
+                    <option value="Low" ${issue.urgency==="Low"?"selected":""}>Low</option>
+                    <option value="Medium" ${issue.urgency==="Medium"?"selected":""}>Medium</option>
+                    <option value="High" ${issue.urgency==="High"?"selected":""}>High</option>
+                  </select>
+                </div>
+                <div class="form-group">
                   <label for="after-image-${issue.id}">Upload After Image (if Completed):</label>
                   <input type="file" id="after-image-${issue.id}" name="after_image" accept="image/*" />
                 </div>
                 <button type="submit">Update Issue</button>
               </form>
             </div>
+
           </div>
         </div>
       `;
-      const marker=L.marker([issue.latitude, issue.longitude],{icon:getIcon(issue.status)}).bindPopup(popupHtml);
+
+      const marker = L.marker([issue.latitude, issue.longitude], { icon: getIcon(issue.urgency) }).bindPopup(popupHtml);
       markers.addLayer(marker);
     });
 
     map.addLayer(markers);
 
-    const legend=L.control({position:"bottomright"});
-    legend.onAdd=map=>{
-      const div=L.DomUtil.create("div","legend");
-      div.innerHTML=`
-        <h4>Issue Status</h4>
-        <div><i style="background:#e74c3c;"></i> Pending</div>
-        <div><i style="background:#f39c12;"></i> Ongoing</div>
-        <div><i style="background:#2ecc71;"></i> Completed</div>`;
+    // Legend
+    const legend = L.control({ position: "bottomright" });
+    legend.onAdd = map => {
+      const div = L.DomUtil.create("div", "legend");
+      div.innerHTML = `
+        <h4>Urgency Levels</h4>
+        <div><i style="background:#2ecc71;"></i> Low</div>
+        <div><i style="background:#f39c12;"></i> Medium</div>
+        <div><i style="background:#e74c3c;"></i> High</div>`;
       return div;
     };
     legend.addTo(map);
 
-    // Toggle menu
-    document.querySelector(".menu-toggle").addEventListener("click",()=> {
+    // Menu toggle
+    document.querySelector(".menu-toggle").addEventListener("click", () => {
       document.querySelector("nav").classList.toggle("active");
     });
   </script>
+
 </body>
 </html>
