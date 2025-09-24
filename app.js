@@ -262,5 +262,120 @@ app.get("/admin/logout", (req, res) => {
 });
 
 
+// Enhanced Reports Route
+// Enhanced Reports Route (with admin protection and session data)
+// Corrected Reports Route matching your database structure
+app.get("/admin/reports", isAdminLoggedIn, async (req, res) => {
+  try {
+    // Get total reports count
+    const totalReportsResult = await db.query(`SELECT COUNT(*) FROM meresahar`);
+    const totalReports = parseInt(totalReportsResult.rows[0].count);
+
+    // Get category statistics
+    const categoryStats = await db.query(`
+      SELECT category, COUNT(*) as count 
+      FROM meresahar 
+      GROUP BY category 
+      ORDER BY COUNT(*) DESC
+    `);
+
+    // Get status statistics - mapping your actual status values
+    const statusStats = await db.query(`
+      SELECT 
+        COALESCE(status, 'pending') as status, 
+        COUNT(*) as count 
+      FROM meresahar 
+      GROUP BY status
+      ORDER BY 
+        CASE 
+          WHEN status = 'pending' THEN 1
+          WHEN status = 'Ongoing' THEN 2
+          WHEN status = 'Completed' THEN 3
+          ELSE 4
+        END
+    `);
+
+    // Get urgency statistics - matching your actual urgency values
+    const urgencyStats = await db.query(`
+      SELECT 
+        COALESCE(urgency, 'Low') as urgency, 
+        COUNT(*) as count 
+      FROM meresahar 
+      GROUP BY urgency
+      ORDER BY 
+        CASE 
+          WHEN urgency = 'High' THEN 1
+          WHEN urgency = 'Medium' THEN 2
+          WHEN urgency = 'Low' THEN 3
+          ELSE 4
+        END
+    `);
+
+    // Get trend data for last 7 days
+    const trendStats = await db.query(`
+      SELECT 
+        DATE(created_at) as day,
+        COUNT(*) as count
+      FROM meresahar 
+      WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+      GROUP BY DATE(created_at)
+      ORDER BY day ASC
+      LIMIT 7
+    `);
+
+    // Get recent reports for table
+    const recentReports = await db.query(`
+      SELECT id, category, status, urgency, created_at
+      FROM meresahar 
+      ORDER BY created_at DESC 
+      LIMIT 10
+    `);
+
+    // Calculate completion rate based on your actual status values
+    const completedCount = statusStats.rows.find(s => s.status === 'Completed')?.count || 0;
+    const completionRate = totalReports > 0 ? Math.round((completedCount / totalReports) * 100) : 0;
+
+    // Map status counts for cards (using your actual status values)
+    const pendingCount = statusStats.rows.find(s => s.status === 'pending')?.count || 0;
+    const ongoingCount = statusStats.rows.find(s => s.status === 'Ongoing')?.count || 0;
+    const completedCountCard = statusStats.rows.find(s => s.status === 'Completed')?.count || 0;
+
+    res.render("report", {
+      title: "Reports & Analytics Dashboard",
+      totalReports,
+      categoryStats: categoryStats.rows,
+      statusStats: statusStats.rows,
+      urgencyStats: urgencyStats.rows,
+      trendStats: trendStats.rows,
+      recentReports: recentReports.rows,
+      completionRate,
+      pendingCount,
+      ongoingCount,
+      completedCount: completedCountCard,
+      admin: req.session.admin,
+      error: null
+    });
+
+  } catch (err) {
+    console.error("Error generating reports:", err);
+    res.render("report", {
+      title: "Reports & Analytics Dashboard",
+      totalReports: 0,
+      categoryStats: [],
+      statusStats: [],
+      urgencyStats: [],
+      trendStats: [],
+      recentReports: [],
+      completionRate: 0,
+      pendingCount: 0,
+      ongoingCount: 0,
+      completedCount: 0,
+      admin: req.session.admin,
+      error: "Unable to load reports data. Please try again later."
+    });
+  }
+});
+
+
 // -------------------- START SERVER --------------------
 app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
