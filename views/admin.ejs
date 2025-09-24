@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>MereSahar - Admin Dashboard</title>
@@ -10,6 +11,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
+
 <body>
 
   <header>
@@ -25,6 +27,35 @@
     </nav>
   </header>
 
+  <!-- 🔽 FILTER SECTION -->
+  <section class="filter-section">
+    <form action="/admin" method="GET" class="filter-form">
+      <select name="category">
+        <option value="">All Categories</option>
+        <option value="Potholes">Potholes</option>
+        <option value="Street Light">Street Light</option>
+        <option value="Water Overflow">Water Overflow</option>
+        <option value="Dustbin Overflow">Dustbin Overflow</option>
+      </select>
+
+      <select name="status">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Completed">Completed</option>
+      </select>
+
+      <select name="urgency">
+        <option value="">All Urgency</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+
+      <button type="submit">Apply Filter</button>
+    </form>
+  </section>
+
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -38,25 +69,25 @@
       attribution: "&copy; OpenStreetMap contributors"
     }).addTo(map);
 
-    const markers = L.markerClusterGroup({ spiderfyOnMaxZoom:true, showCoverageOnHover:false, zoomToBoundsOnClick:true, chunkedLoading:true, maxClusterRadius:50 });
+    const markers = L.markerClusterGroup({ spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true, chunkedLoading: true, maxClusterRadius: 50 });
 
     const getIcon = (urgency) => {
       let color = "#2ecc71"; // Low
-      if(urgency === "Medium") color="#f39c12";
-      if(urgency === "High") color="#e74c3c";
-      return L.divIcon({ className:"custom-marker", html:`<i style="background:${color}; width:20px; height:20px; display:block; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3);"></i>`, iconSize:[20,20] });
+      if (urgency === "Medium") color = "#f39c12";
+      if (urgency === "High") color = "#e74c3c";
+      return L.divIcon({ className: "custom-marker", html: `<i style="background:${color}; width:20px; height:20px; display:block; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3);"></i>`, iconSize: [20, 20] });
     };
 
     issues.forEach(issue => {
-      if(!issue.latitude || !issue.longitude) return;
+      if (!issue.latitude || !issue.longitude) return;
 
-      let imagesHtml="";
-      if(!issue.has_before && !issue.has_after){
-        imagesHtml=`<div class="no-images">No images uploaded yet</div>`;
+      let imagesHtml = "";
+      if (!issue.has_before && !issue.has_after) {
+        imagesHtml = `<div class="no-images">No images uploaded yet</div>`;
       } else {
-        imagesHtml=`<div class="image-grid">`;
-        if(issue.has_before){
-          imagesHtml+=`<div class="image-wrapper">
+        imagesHtml = `<div class="image-grid">`;
+        if (issue.has_before) {
+          imagesHtml += `<div class="image-wrapper">
             <span class="img-loading">Loading before image...</span>
             <img src="/images/${issue.id}/before" class="popup-img" alt="Before Image"
               onload="this.previousElementSibling.remove(); this.style.display='block';"
@@ -64,8 +95,8 @@
               style="display:none;"/>
           </div>`;
         }
-        if(issue.has_after){
-          imagesHtml+=`<div class="image-wrapper">
+        if (issue.has_after) {
+          imagesHtml += `<div class="image-wrapper">
             <span class="img-loading">Loading after image...</span>
             <img src="/images/${issue.id}/after" class="popup-img" alt="After Image"
               onload="this.previousElementSibling.remove(); this.style.display='block';"
@@ -73,17 +104,17 @@
               style="display:none;"/>
           </div>`;
         }
-        imagesHtml+=`</div>`;
+        imagesHtml += `</div>`;
       }
 
-      const statusClass = `status-${(issue.status||'Pending').toLowerCase()}`;
-      const urgencyClass = `urgency-${(issue.urgency||'Low').toLowerCase()}`;
+      const statusClass = `status-${(issue.status || 'Pending').toLowerCase()}`;
+      const urgencyClass = `urgency-${(issue.urgency || 'Low').toLowerCase()}`;
 
       const popupHtml = `
         <div class="popup-card">
           <div class="popup-header">
             <div class="popup-title"><span>${issue.category}</span><span class="popup-category">#${issue.id}</span></div>
-            <div class="popup-user">${issue.username||"Anonymous"}</div>
+            <div class="popup-user">${issue.username || "Anonymous"}</div>
           </div>
 
           <div class="popup-content">
@@ -104,17 +135,17 @@
                 <div class="form-group">
                   <label for="status-${issue.id}">Status:</label>
                   <select id="status-${issue.id}" name="status" required>
-                    <option value="Pending" ${issue.status==="Pending"?"selected":""}>Pending</option>
-                    <option value="Ongoing" ${issue.status==="Ongoing"?"selected":""}>Ongoing</option>
-                    <option value="Completed" ${issue.status==="Completed"?"selected":""}>Completed</option>
+                    <option value="Pending" ${issue.status === "Pending" ? "selected" : ""}>Pending</option>
+                    <option value="Ongoing" ${issue.status === "Ongoing" ? "selected" : ""}>Ongoing</option>
+                    <option value="Completed" ${issue.status === "Completed" ? "selected" : ""}>Completed</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label for="urgency-${issue.id}">Urgency:</label>
                   <select id="urgency-${issue.id}" name="urgency" required>
-                    <option value="Low" ${issue.urgency==="Low"?"selected":""}>Low</option>
-                    <option value="Medium" ${issue.urgency==="Medium"?"selected":""}>Medium</option>
-                    <option value="High" ${issue.urgency==="High"?"selected":""}>High</option>
+                    <option value="Low" ${issue.urgency === "Low" ? "selected" : ""}>Low</option>
+                    <option value="Medium" ${issue.urgency === "Medium" ? "selected" : ""}>Medium</option>
+                    <option value="High" ${issue.urgency === "High" ? "selected" : ""}>High</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -155,4 +186,5 @@
   </script>
 
 </body>
+
 </html>

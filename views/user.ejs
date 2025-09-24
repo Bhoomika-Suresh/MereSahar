@@ -1,122 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title><%= title %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/user.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  </head>
-  <body>
-    <!-- Header with Menu -->
-    <header>
-      <a href="/" class="logo">
-        <i class="fas fa-city"></i>
-        <span>MereSahar</span>
-      </a>
-      
-      <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
-      </button>
-      
-      <nav id="nav">
-        <ul>
-          <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
-          <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
-          <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
-          <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
-        </ul>
-      </nav>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <title>
+    <%= title %>
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Dashboard split -->
-    <div class="dashboard">
-      <!-- Left: Form Section -->
-      <div class="form-section">
-        <h2>Report an Issue</h2>
-        <form action="/report" method="POST" enctype="multipart/form-data" id="issueForm" class="issue-form">
-          <label for="username">Name</label>
-          <input type="text" name="username" id="username" required placeholder="Your Name"/>
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/user.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 
-          <label for="category">Category</label>
-          <select name="category" id="category" required>
-            <option value="">--Select--</option>
-            <option value="Potholes">Potholes</option>
-            <option value="Street Light">Street Light</option>
-            <option value="Water Overflow">Water Overflow</option>
-            <option value="Dustbin Overflow">Dustbin Overflow</option>
-          </select>
+<body>
+  <!-- Header with Menu -->
+  <header>
+    <a href="/" class="logo">
+      <i class="fas fa-city"></i>
+      <span>MereSahar</span>
+    </a>
 
-          <label for="description">Description</label>
-          <textarea name="description" id="description" required placeholder="Describe issue"></textarea>
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
 
-          <!-- Camera Section -->
-          <div class="camera-section">
-            <button type="button" id="cameraBtn">📷 Open Camera</button>
-            <div id="cameraOptions" class="hidden">
-              <button type="button" id="frontCam">Front Camera</button>
-              <button type="button" id="backCam">Back Camera</button>
-            </div>
-            <video id="video" autoplay playsinline class="hidden"></video>
-            <button type="button" id="captureBtn" class="hidden">📸 Capture</button>
-            <canvas id="canvas" class="hidden"></canvas>
-            <img id="photoPreview" class="hidden" alt="Captured Image"/>
-            <input type="file" name="image" id="imageInput" class="hidden" accept="image/*"/>
+    <nav id="nav">
+      <ul>
+        <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+  <!-- 🔽 FILTER SECTION -->
+  <section class="filter-section">
+    <form action="/user" method="GET" class="filter-form">
+      <select name="category">
+        <option value="">All Categories</option>
+        <option value="Potholes">Potholes</option>
+        <option value="Street Light">Street Light</option>
+        <option value="Water Overflow">Water Overflow</option>
+        <option value="Dustbin Overflow">Dustbin Overflow</option>
+      </select>
+
+      <select name="status">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Completed">Completed</option>
+      </select>
+
+      <select name="urgency">
+        <option value="">All Urgency</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+
+      <button type="submit">Apply Filter</button>
+    </form>
+  </section>
+
+  <!-- Dashboard split -->
+  <div class="dashboard">
+    <!-- Left: Form Section -->
+    <div class="form-section">
+      <h2>Report an Issue</h2>
+      <form action="/report" method="POST" enctype="multipart/form-data" id="issueForm" class="issue-form">
+        <label for="username">Name</label>
+        <input type="text" name="username" id="username" required placeholder="Your Name" />
+
+        <label for="category">Category</label>
+        <select name="category" id="category" required>
+          <option value="">--Select--</option>
+          <option value="Potholes">Potholes</option>
+          <option value="Street Light">Street Light</option>
+          <option value="Water Overflow">Water Overflow</option>
+          <option value="Dustbin Overflow">Dustbin Overflow</option>
+        </select>
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description" required placeholder="Describe issue"></textarea>
+
+        <!-- Camera Section -->
+        <div class="camera-section">
+          <button type="button" id="cameraBtn">📷 Open Camera</button>
+          <div id="cameraOptions" class="hidden">
+            <button type="button" id="frontCam">Front Camera</button>
+            <button type="button" id="backCam">Back Camera</button>
           </div>
+          <video id="video" autoplay playsinline class="hidden"></video>
+          <button type="button" id="captureBtn" class="hidden">📸 Capture</button>
+          <canvas id="canvas" class="hidden"></canvas>
+          <img id="photoPreview" class="hidden" alt="Captured Image" />
+          <input type="file" name="image" id="imageInput" class="hidden" accept="image/*" />
+        </div>
 
-          <!-- Hidden Lat/Lng -->
-          <input type="hidden" name="latitude" id="issueLat" required />
-          <input type="hidden" name="longitude" id="issueLng" required />
+        <!-- Hidden Lat/Lng -->
+        <input type="hidden" name="latitude" id="issueLat" required />
+        <input type="hidden" name="longitude" id="issueLng" required />
 
-          <!-- Actions: Get Location + Submit Issue -->
-          <div class="form-actions">
-            <button type="button" class="location-btn" id="getLoc">📍 Get My Location</button>
-            <button type="submit" class="submit-btn">🚀 Submit Issue</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Right: Map Section -->
-      <div class="map-section">
-        <div id="map"></div>
-      </div>
+        <!-- Actions: Get Location + Submit Issue -->
+        <div class="form-actions">
+          <button type="button" class="location-btn" id="getLoc">📍 Get My Location</button>
+          <button type="submit" class="submit-btn">🚀 Submit Issue</button>
+        </div>
+      </form>
     </div>
 
-    <footer>
-      this is footer
-    </footer>
+    <!-- Right: Map Section -->
+    <div class="map-section">
+      <div id="map"></div>
+    </div>
+  </div>
 
-    <!-- Leaflet + Cluster -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <footer>
+    this is footer
+  </footer>
 
-    <!-- JS Modules -->
-    <script type="module">
-      import { initializeMap } from "/js/map.js";
-      import { initGeolocation } from "/js/geolocation.js";
-      import { initCamera } from "/js/camera.js";
+  <!-- Leaflet + Cluster -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
-      const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
-      const map = initializeMap(issues);
-      initGeolocation(map);
-      initCamera();
-    </script>
+  <!-- JS Modules -->
+  <script type="module">
+    import { initializeMap } from "/js/map.js";
+    import { initGeolocation } from "/js/geolocation.js";
+    import { initCamera } from "/js/camera.js";
 
-    <!-- Navbar toggle -->
-    <script>
-      const menuToggle = document.getElementById('menuToggle');
-      const nav = document.getElementById('nav');
-      menuToggle.addEventListener('click', () => {
-        nav.classList.toggle('active');
-        const icon = menuToggle.querySelector('i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
-      });
-    </script>
-  </body>
+    const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
+    const map = initializeMap(issues);
+    initGeolocation(map);
+    initCamera();
+  </script>
+
+  <!-- Navbar toggle -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('nav');
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      const icon = menuToggle.querySelector('i');
+      icon.classList.toggle('fa-bars');
+      icon.classList.toggle('fa-times');
+    });
+  </script>
+</body>
+
 </html>

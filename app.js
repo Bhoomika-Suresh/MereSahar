@@ -50,29 +50,57 @@ app.get("/", (req, res) => {
 });
 
 // Get all issues (frontend display only)
+// Get all issues (frontend display with filters)
 app.get("/user", async (req, res) => {
+  const { category, status, urgency } = req.query;
+
   try {
-    const result = await db.query(`
+    let query = `
       SELECT 
         id, username, category, description, latitude, longitude, status, urgency,
         (image IS NOT NULL) AS has_before,
         (after_image IS NOT NULL) AS has_after
       FROM meresahar
-      ORDER BY id DESC
-    `);
+    `;
+
+    let conditions = [];
+    let values = [];
+    let idx = 1;
+
+    if (category) {
+      conditions.push(`category = $${idx++}`);
+      values.push(category);
+    }
+    if (status) {
+      conditions.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (urgency) {
+      conditions.push(`urgency = $${idx++}`);
+      values.push(urgency);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    query += " ORDER BY id DESC";
+
+    const result = await db.query(query, values);
 
     const issues = result.rows.map((row) => ({
       ...row,
       status: row.status || "Pending",
-      urgency: row.urgency || "Low", // default to Low if null
-    }));
+      urgency: row.urgency || "Low",
+    })); 
 
-    res.render("user", { title: "MereSahar Dashboard", issues });
+    res.render("user", { title: "MereSahar Dashboard", issues, req });
   } catch (err) {
     console.error("Error fetching records", err.stack);
     res.status(500).send("Database error");
   }
 });
+
 
 
 // Serve images separately
@@ -118,28 +146,54 @@ app.post("/report", upload.single("image"), async (req, res) => {
 });
 
 // Admin dashboard
-// Admin dashboard with urgency
+// Admin dashboard with filters
 app.get("/admin", async (req, res) => {
+  const { category, status, urgency } = req.query;
+
   try {
-    const result = await db.query(`
+    let query = `
       SELECT 
         id, username, category, description, latitude, longitude, status, urgency,
         (image IS NOT NULL) AS has_before,
         (after_image IS NOT NULL) AS has_after
       FROM meresahar
-      ORDER BY id DESC
-    `);
+    `;
+
+    let conditions = [];
+    let values = [];
+    let idx = 1;
+
+    if (category) {
+      conditions.push(`category = $${idx++}`);
+      values.push(category);
+    }
+    if (status) {
+      conditions.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (urgency) {
+      conditions.push(`urgency = $${idx++}`);
+      values.push(urgency);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    query += " ORDER BY id DESC";
+
+    const result = await db.query(query, values);
 
     const issues = result.rows.map((row) => ({
       ...row,
       status: row.status || "Pending",
-      urgency: row.urgency || "Low" // default to Low if null
+      urgency: row.urgency || "Low",
     }));
 
     res.render("admin", { issues });
   } catch (err) {
-    console.error(err.stack);
-    res.status(500).send("DB error");
+    console.error("Error fetching records", err.stack);
+    res.status(500).send("Database error");
   }
 });
 
