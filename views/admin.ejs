@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MereSahar - Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <style>
+    #map { height: 90vh; width: 100%; margin-top: 10px; }
+    .popup-content { max-width: 320px; }
+    .popup-content h3 { margin: 4px 0; font-size: 16px; }
+    .popup-content p { margin: 2px 0; font-size: 14px; }
+    .popup-content .images {
+      display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;
+    }
+    .popup-content img {
+      width: 120px; height: 100px; object-fit: cover;
+      border-radius: 6px; border: 1px solid #ccc;
+    }
+    .placeholder {
+      font-size: 13px; color: #666; background: #f9f9f9;
+      border: 1px dashed #bbb; border-radius: 4px;
+      padding: 6px; width: 120px; height: 100px;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .popup-content form {
+      display: flex; flex-direction: column; gap: 6px; margin-top: 10px;
+    }
+    .popup-content select, .popup-content input, .popup-content button {
+      padding: 6px; font-size: 14px;
+    }
+    .popup-content button {
+      cursor: pointer; background: #333; color: #fff;
+      border: none; border-radius: 4px; padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛠️ Admin Dashboard - Manage Issues</h1>
+  </header>
+
+  <div id="map"></div>
+
+  <!-- Leaflet + Clustering -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <script>
+    const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
+
+    // Init map
+    const map = L.map("map").setView([20.5937, 78.9629], 5);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    const markers = L.markerClusterGroup();
+
+    // Colored status markers
+    const getIcon = (status) => {
+      let color = "red"; // default Pending
+      if (status === "Ongoing") color = "yellow";
+      if (status === "Completed") color = "green";
+
+      return L.divIcon({
+        className: "custom-marker",
+        html: `<i style="background:${color};
+                        width:16px;
+                        height:16px;
+                        display:block;
+                        border-radius:50%;
+                        border:2px solid white;"></i>`,
+        iconSize: [16, 16],
+      });
+    };
+
+    issues.forEach(issue => {
+      // Handle images with placeholder + loading
+      let imagesHtml = "";
+      if (!issue.has_before && !issue.has_after) {
+        imagesHtml = `<div class="placeholder">No images uploaded yet</div>`;
+      } else {
+        if (issue.has_before) {
+          imagesHtml += `
+            <div>
+              <div class="placeholder">Before image is loading...</div>
+              <img src="/images/${issue.id}/before" 
+                   alt="Before Image" 
+                   onload="this.previousElementSibling.remove()" 
+                   onerror="this.previousElementSibling.textContent='Before image failed to load'"/>
+            </div>`;
+        } else {
+          imagesHtml += `<div class="placeholder">No before image</div>`;
+        }
+
+        if (issue.has_after) {
+          imagesHtml += `
+            <div>
+              <div class="placeholder">After image is loading...</div>
+              <img src="/images/${issue.id}/after" 
+                   alt="After Image" 
+                   onload="this.previousElementSibling.remove()" 
+                   onerror="this.previousElementSibling.textContent='After image failed to load'"/>
+            </div>`;
+        } else {
+          imagesHtml += `<div class="placeholder">No after image</div>`;
+        }
+      }
+
+      const popupHtml = `
+        <div class="popup-content">
+          <h3>${issue.category}</h3>
+          <p><b>User:</b> ${issue.username}</p>
+          <p><b>Description:</b> ${issue.description}</p>
+          <p><b>Status:</b> ${issue.status}</p>
+
+          <div class="images">${imagesHtml}</div>
+
+          <form action="/admin/update/${issue.id}" method="POST" enctype="multipart/form-data">
+            <label>Status:</label>
+            <select name="status" required>
+              <option value="Pending" ${issue.status === "Pending" ? "selected" : ""}>Pending</option>
+              <option value="Ongoing" ${issue.status === "Ongoing" ? "selected" : ""}>Ongoing</option>
+              <option value="Completed" ${issue.status === "Completed" ? "selected" : ""}>Completed</option>
+            </select>
+
+            <label>Upload After Image (only if Completed):</label>
+            <input type="file" name="after_image" accept="image/*" />
+
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      `;
+
+      const marker = L.marker([issue.latitude, issue.longitude], {
+        icon: getIcon(issue.status)
+      }).bindPopup(popupHtml);
+
+      markers.addLayer(marker);
+    });
+
+    map.addLayer(markers);
+  </script>
+</body>
+</html>

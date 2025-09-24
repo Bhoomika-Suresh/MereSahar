@@ -1,8 +1,4 @@
 // app.js
-
-// -----------------------------
-// IMPORTS & CONFIGURATION
-// -----------------------------
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -10,90 +6,65 @@ import dotenv from "dotenv";
 import { Pool } from "pg";
 import multer from "multer";
 
-// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
 const port = 3000;
 
-// -----------------------------
-// POSTGRESQL CONNECTION SETUP
-// -----------------------------
 const db = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false }, // Adjust based on your DB setup
+  ssl: { rejectUnauthorized: false },
 });
 
-// Check DB connection at startup
 db.connect()
   .then((client) => {
     console.log("Connected to PostgreSQL database.");
     client.release();
   })
   .catch((err) => {
-    console.error("Error connecting to PostgreSQL", err);
-    process.exit(1); // Stop the app if DB connection fails
+    console.error("DB connection error", err);
+    process.exit(1);
   });
 
-// -----------------------------
-// FILE & DIRECTORY SETUP
-// -----------------------------
-// Fix __dirname with ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// -----------------------------
-// MIDDLEWARE
-// -----------------------------
-app.use(express.static(path.join(__dirname, "public"))); // Serve static files
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded form data
-// app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-// app.use(express.json({ limit: "10mb" }));
-
-// Multer setup for handling file uploads (memory storage)
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-// Set EJS as template engine
+const upload = multer({ storage });
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// -----------------------------
+// --------------------
 // ROUTES
-// -----------------------------
+// --------------------
 
-// Home route - serves the static index.html
+// Home
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "index.html"));
 });
 
-// Dashboard route - display all user reports in EJS
+// Get all issues (metadata only)
 app.get("/user", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM meresahar ORDER BY id DESC");
+    const result = await db.query(`
+      SELECT 
+        id, username, category, description, latitude, longitude, status,
+        (image IS NOT NULL) AS has_before,
+        (after_image IS NOT NULL) AS has_after
+      FROM meresahar
+      ORDER BY id DESC
+    `);
 
-    // Convert BYTEA images to base64 for frontend display
-    const issues = result.rows.map((row) => {
-      let base64Image = null;
-      if (row.image) {
-        const buffer = Buffer.isBuffer(row.image) ? row.image : Buffer.from(row.image);
-        base64Image = `data:image/png;base64,${buffer.toString("base64")}`;
-      }
-      return {
-        id: row.id,
-        username: row.username,
-        category: row.category,
-        description: row.description,
-        latitude: row.latitude,
-        longitude: row.longitude,
-        status: row.status || "Pending",
-        image: base64Image,
-      };
-    });
+    const issues = result.rows.map((row) => ({
+      ...row,
+      status: row.status || "Pending",
+    }));
 
     res.render("user", { title: "MereSahar Dashboard", issues });
   } catch (err) {
@@ -102,35 +73,90 @@ app.get("/user", async (req, res) => {
   }
 });
 
-// Route to handle new reports submitted via form (with image upload)
+// Serve images separately
+app.get("/images/:id/:type", async (req, res) => {
+  const { id, type } = req.params; // type = "before" or "after"
+  const column = type === "after" ? "after_image" : "image";
+
+  try {
+    const result = await db.query(`SELECT ${column} FROM meresahar WHERE id=$1`, [id]);
+    if (!result.rows.length || !result.rows[0][column]) {
+      return res.status(404).send("No image");
+    }
+
+    res.setHeader("Content-Type", "image/png");
+    res.send(result.rows[0][column]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("DB error");
+  }
+});
+
+// Submit new report
 app.post("/report", upload.single("image"), async (req, res) => {
   const { username, category, description, latitude, longitude } = req.body;
-
-  console.log(
-    `User's Data => Name: ${username}, Category: ${category}, Description: ${description}, Latitude: ${latitude}, Longitude: ${longitude}`
-  );
-
-  let imageBuffer = null;
-  if (req.file) {
-    imageBuffer = req.file.buffer; // Use buffer from multer directly
-  }
+  const imageBuffer = req.file ? req.file.buffer : null;
 
   try {
     await db.query(
-      `INSERT INTO meresahar (username, category, description, latitude, longitude, image)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
+      `
+      INSERT INTO meresahar (username, category, description, latitude, longitude, image)
+      VALUES ($1,$2,$3,$4,$5,$6)
+    `,
       [username, category, description, latitude, longitude, imageBuffer]
     );
-    res.redirect("/user"); // Redirect to dashboard after submission
+    res.redirect("/user");
   } catch (err) {
-    console.error("Error inserting record", err.stack);
+    console.error(err.stack);
     res.status(500).send("Database error");
   }
 });
 
-// -----------------------------
-// START SERVER
-// -----------------------------
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+// Admin dashboard
+app.get("/admin", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        id, username, category, description, latitude, longitude, status,
+        (image IS NOT NULL) AS has_before,
+        (after_image IS NOT NULL) AS has_after
+      FROM meresahar
+      ORDER BY id DESC
+    `);
+
+    const issues = result.rows.map((row) => ({
+      ...row,
+      status: row.status || "Pending",
+    }));
+
+    res.render("admin", { issues });
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).send("DB error");
+  }
 });
+
+// Update issue
+app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const afterImageBuffer = req.file ? req.file.buffer : null;
+
+  try {
+    if (afterImageBuffer && status === "Completed") {
+      await db.query("UPDATE meresahar SET status=$1, after_image=$2 WHERE id=$3", [
+        status,
+        afterImageBuffer,
+        id,
+      ]);
+    } else {
+      await db.query("UPDATE meresahar SET status=$1 WHERE id=$2", [status, id]);
+    }
+    res.redirect("/admin");
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).send("DB error");
+  }
+});
+
+app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
