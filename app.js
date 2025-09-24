@@ -97,13 +97,16 @@ app.post("/report", upload.single("image"), async (req, res) => {
   const { username, category, description, latitude, longitude } = req.body;
   const imageBuffer = req.file ? req.file.buffer : null;
 
-  try {
+  // Ensure description is always a string
+  const safeDescription = description.toString();
+
+  try { 
     await db.query(
       `
       INSERT INTO meresahar (username, category, description, latitude, longitude, image)
       VALUES ($1,$2,$3,$4,$5,$6)
     `,
-      [username, category, description, latitude, longitude, imageBuffer]
+      [username, category, safeDescription, latitude, longitude, imageBuffer]
     );
     res.redirect("/user");
   } catch (err) {
