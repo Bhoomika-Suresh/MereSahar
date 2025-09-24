@@ -108,7 +108,6 @@
       cursor: pointer;
       color: var(--primary);
     }
-
     /* Main Content */
     .container {
       flex: 1;

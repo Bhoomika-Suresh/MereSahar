@@ -33,7 +33,7 @@
     }
 
     /* Header Styles */
-     header {
+    header {
       background: var(--header-bg);
       backdrop-filter: blur(10px);
       padding: 1rem 2rem;
@@ -100,6 +100,14 @@
       width: 100%;
     }
 
+    nav a.active {
+      color: var(--primary);
+    }
+
+    nav a.active:after {
+      width: 100%;
+    }
+
     .menu-toggle {
       display: none;
       background: none;
@@ -144,322 +152,191 @@
       border-radius: 2px;
     }
 
-    /* About Hero Section */
-    .about-hero {
-      display: flex;
-      align-items: center;
-      gap: 3rem;
-      margin-bottom: 4rem;
-      animation: slideIn 1s ease;
+    /* FAQ-specific styles */
+    .faq-container {
+      max-width: 900px;
+      margin: 0 auto 4rem;
     }
-
-    .about-hero-content {
-      flex: 1;
-    }
-
-    .about-hero-content h2 {
-      font-size: 2.2rem;
-      margin-bottom: 1.5rem;
-      color: var(--secondary);
-    }
-
-    .about-hero-content p {
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-      line-height: 1.7;
-    }
-
-    .about-hero-image {
-      flex: 1;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-    }
-
-    .about-hero-image:hover {
-      transform: scale(1.02);
-    }
-
-    .about-hero-image img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    /* Mission & Vision Section */
-    .mission-vision {
-      display: flex;
-      gap: 2rem;
-      margin-bottom: 4rem;
-    }
-
-    .mission, .vision {
-      flex: 1;
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 2.5rem;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-      transition: var(--transition);
-    }
-
-    .mission:before, .vision:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: var(--gradient);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.5s ease;
-    }
-
-    .mission:hover, .vision:hover {
-      transform: translateY(-10px);
-    }
-
-    .mission:hover:before, .vision:hover:before {
-      transform: scaleX(1);
-    }
-
-    .mission h2, .vision h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      color: var(--secondary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .mission p, .vision p {
-      font-size: 1.1rem;
-      line-height: 1.7;
-    }
-
-    /* Values Section */
-    .values {
-      margin-bottom: 4rem;
-    }
-
-    .values h2 {
+    
+    .faq-intro {
       text-align: center;
-      margin-bottom: 2rem;
-      font-size: 2.2rem;
-      color: var(--secondary);
+      margin-bottom: 3rem;
+      padding: 0 1rem;
     }
-
-    .values-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
+    
+    .faq-intro p {
+      font-size: 1.1rem;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto;
     }
-
-    .value-card {
+    
+    .faq-item {
       background: var(--card-bg);
       border-radius: 15px;
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      text-align: center;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .value-card:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: var(--gradient);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.5s ease;
-    }
-
-    .value-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .value-card:hover:before {
-      transform: scaleX(1);
-    }
-
-    .value-icon {
-      width: 70px;
-      height: 70px;
-      background: var(--gradient);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      color: white;
-      font-size: 1.8rem;
-    }
-
-    .value-card h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: var(--secondary);
-    }
-
-    .value-card p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    /* Team Section */
-    .team {
-      margin-bottom: 4rem;
-    }
-
-    .team h2 {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 2.2rem;
-      color: var(--secondary);
-    }
-
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-    }
-
-    .team-member {
-      background: var(--card-bg);
-      border-radius: 15px;
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      text-align: center;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .team-member:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: var(--gradient);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.5s ease;
-    }
-
-    .team-member:hover {
-      transform: translateY(-5px);
-    }
-
-    .team-member:hover:before {
-      transform: scaleX(1);
-    }
-
-    .member-photo {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      margin: 0 auto 1.5rem;
-      overflow: hidden;
-      border: 4px solid var(--light);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .member-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit:contain;
-    }
-
-    .team-member h3 {
-      font-size: 1.6rem;
-      margin-bottom: 0.5rem;
-      color: var(--secondary);
-    }
-
-    .team-member .role {
-      color: var(--primary);
-      font-weight: 600;
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
-    }
-
-    .team-member p {
-      font-size: 1.1rem;
-      line-height: 1.6;
       margin-bottom: 1.5rem;
-      flex-grow: 1;
-    }
-
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: auto;
-    }
-
-    .social-links a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      background: var(--light);
-      border-radius: 50%;
-      color: var(--dark);
+      box-shadow: var(--shadow);
+      overflow: hidden;
       transition: var(--transition);
-      text-decoration: none;
+    }
+    
+    .faq-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .faq-question {
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(67, 97, 238, 0.05);
+      border-left: 5px solid var(--primary);
+      transition: var(--transition);
+    }
+    
+    .faq-question:hover {
+      background: rgba(67, 97, 238, 0.1);
+    }
+    
+    .faq-question h3 {
+      margin: 0;
       font-size: 1.2rem;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
     }
-
-    .social-links a:hover {
+    
+    .faq-question i:first-child {
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .faq-toggle {
+      color: var(--primary);
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    
+    .faq-answer {
+      padding: 0 2rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .faq-answer p {
+      padding: 1.5rem 0;
+      margin: 0;
+      color: #555;
+      line-height: 1.7;
+    }
+    
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 0 2rem;
+    }
+    
+    .faq-item.active .faq-toggle {
+      transform: rotate(180deg);
+    }
+    
+    .faq-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+    
+    .faq-category {
+      padding: 0.8rem 1.5rem;
+      background: var(--light);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      color: var(--dark);
+      border: 2px solid transparent;
+    }
+    
+    .faq-category:hover, .faq-category.active {
       background: var(--primary);
       color: white;
       transform: translateY(-3px);
     }
-
-    /* Stats Section */
-    .stats {
-      background: var(--gradient);
+    
+    .contact-prompt {
+      background: var(--card-bg);
       border-radius: 20px;
-      padding: 3rem 2rem;
-      margin-bottom: 4rem;
-      color: white;
+      padding: 3rem;
       text-align: center;
       box-shadow: var(--shadow);
+      margin-top: 4rem;
+      position: relative;
+      overflow: hidden;
     }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
+    
+    .contact-prompt:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: var(--gradient);
     }
-
-    .stat-item {
-      padding: 1rem;
+    
+    .contact-prompt h2 {
+      color: var(--secondary);
+      margin-bottom: 1rem;
     }
-
-    .stat-number {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
+    
+    .contact-prompt p {
+      color: #666;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
-
-    .stat-label {
-      font-size: 1.2rem;
-      opacity: 0.9;
+    
+    .search-box {
+      max-width: 500px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 1rem 1.5rem 1rem 3rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 50px;
+      font-size: 1rem;
+      transition: var(--transition);
+      background: var(--light);
+    }
+    
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+      display: none;
     }
 
     /* Footer Styles */
@@ -528,6 +405,36 @@
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      background: var(--gradient);
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+    }
+
+    .btn i {
+      transition: var(--transition);
+    }
+
+    .btn:hover i {
+      transform: translateX(5px);
+    }
+
     /* Animations */
     @keyframes fadeIn {
       from {
@@ -569,11 +476,7 @@
 
     /* Responsive Design */
     @media (max-width: 900px) {
-      .about-hero {
-        flex-direction: column;
-      }
-      
-      .mission-vision {
+      .contact-container {
         flex-direction: column;
       }
     }
@@ -613,14 +516,6 @@
       h1 {
         font-size: 2.2rem;
       }
-
-      .about-hero-content h2 {
-        font-size: 1.8rem;
-      }
-
-      .team h2, .values h2 {
-        font-size: 1.8rem;
-      }
     }
 
     @media (max-width: 480px) {
@@ -632,24 +527,21 @@
         font-size: 1.8rem;
       }
       
-      .mission, .vision, .value-card, .team-member {
+      .contact-info, .contact-form {
         padding: 1.5rem;
-      }
-      
-      .stats {
-        padding: 2rem 1rem;
       }
       
       .footer-section {
         min-width: 100%;
       }
-
-      .member-photo {
-        width: 120px;
-        height: 120px;
+      
+      .faq-categories {
+        flex-direction: column;
+        align-items: center;
       }
-
-      .team-member h3 {
-        font-size: 1.4rem;
+      
+      .faq-category {
+        width: 100%;
+        text-align: center;
       }
     }
