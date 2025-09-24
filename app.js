@@ -49,12 +49,12 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "index.html"));
 });
 
-// Get all issues (metadata only)
+// Get all issues (frontend display only)
 app.get("/user", async (req, res) => {
   try {
     const result = await db.query(`
       SELECT 
-        id, username, category, description, latitude, longitude, status,
+        id, username, category, description, latitude, longitude, status, urgency,
         (image IS NOT NULL) AS has_before,
         (after_image IS NOT NULL) AS has_after
       FROM meresahar
@@ -64,6 +64,7 @@ app.get("/user", async (req, res) => {
     const issues = result.rows.map((row) => ({
       ...row,
       status: row.status || "Pending",
+      urgency: row.urgency || "Low", // default to Low if null
     }));
 
     res.render("user", { title: "MereSahar Dashboard", issues });
@@ -72,6 +73,7 @@ app.get("/user", async (req, res) => {
     res.status(500).send("Database error");
   }
 });
+
 
 // Serve images separately
 app.get("/images/:id/:type", async (req, res) => {
@@ -116,11 +118,12 @@ app.post("/report", upload.single("image"), async (req, res) => {
 });
 
 // Admin dashboard
+// Admin dashboard with urgency
 app.get("/admin", async (req, res) => {
   try {
     const result = await db.query(`
       SELECT 
-        id, username, category, description, latitude, longitude, status,
+        id, username, category, description, latitude, longitude, status, urgency,
         (image IS NOT NULL) AS has_before,
         (after_image IS NOT NULL) AS has_after
       FROM meresahar
@@ -130,6 +133,7 @@ app.get("/admin", async (req, res) => {
     const issues = result.rows.map((row) => ({
       ...row,
       status: row.status || "Pending",
+      urgency: row.urgency || "Low" // default to Low if null
     }));
 
     res.render("admin", { issues });
@@ -139,21 +143,24 @@ app.get("/admin", async (req, res) => {
   }
 });
 
+
 // Update issue
 app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, urgency } = req.body; // added urgency
   const afterImageBuffer = req.file ? req.file.buffer : null;
 
   try {
     if (afterImageBuffer && status === "Completed") {
-      await db.query("UPDATE meresahar SET status=$1, after_image=$2 WHERE id=$3", [
-        status,
-        afterImageBuffer,
-        id,
-      ]);
+      await db.query(
+        "UPDATE meresahar SET status=$1, urgency=$2, after_image=$3 WHERE id=$4",
+        [status, urgency, afterImageBuffer, id]
+      );
     } else {
-      await db.query("UPDATE meresahar SET status=$1 WHERE id=$2", [status, id]);
+      await db.query(
+        "UPDATE meresahar SET status=$1, urgency=$2 WHERE id=$3",
+        [status, urgency, id]
+      );
     }
     res.redirect("/admin");
   } catch (err) {
@@ -161,5 +168,6 @@ app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => 
     res.status(500).send("DB error");
   }
 });
+
 
 app.listen(port, () => console.log(`Server running at http://localhost:${port}`));

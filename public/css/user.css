@@ -7,7 +7,7 @@
 }
 body {
   background: #f0f4f9;
-  height: 100%;
+  min-height: 100vh;
 }
 
 /* ================= VARIABLES ================= */
@@ -16,9 +16,10 @@ body {
   --accent: #ff6b6b;
   --dark: #2d3436;
   --light: #ffffff;
-  --header-bg: rgba(255, 255, 255, 0.85);
+  --header-bg: rgba(255, 255, 255, 0.95);
   --shadow: 0 4px 20px rgba(0,0,0,0.08);
   --transition: all 0.3s ease;
+  --header-height: 70px;
 }
 
 /* ================= HEADER ================= */
@@ -27,9 +28,11 @@ header {
   backdrop-filter: blur(10px);
   padding: 1rem 2rem;
   box-shadow: var(--shadow);
-  position: sticky;
+  position: fixed; /* changed from sticky */
   top: 0;
-  z-index: 1000;
+  left: 0;
+  width: 100%;
+  z-index: 10000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -102,10 +105,10 @@ nav a:hover:after {
 .dashboard {
   display: flex;
   gap: 20px;
-  padding: 20px;
+  padding: calc(var(--header-height) + 20px) 20px 20px; /* add top padding for fixed header */
   max-width: 1800px;
   margin: auto;
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - var(--header-height));
 }
 
 /* ================= FORM SECTION ================= */
@@ -235,9 +238,6 @@ button {
 .popup-img:hover {
   transform: scale(1.02);
 }
-.hidden {
-  display: none;
-}
 
 /* Modern Popup */
 .leaflet-popup-content-wrapper {
@@ -281,6 +281,8 @@ button {
 .status-pending { background:#ffeaa7; color:#e17055; }
 .status-ongoing { background:#81ecec; color:#00cec9; }
 .status-completed { background:#55efc4; color:#00b894; }
+
+/* ================= IMAGE GRID ================= */
 .popup-images { margin-top:15px; }
 .images-section-title { font-weight:600; margin-bottom:10px; color:#2d3436; font-size:1em; display:flex; align-items:center; gap:8px; }
 .images-section-title::before { content:"🖼️"; }
@@ -302,24 +304,18 @@ button {
 .image-wrapper:hover { transform:translateY(-3px); box-shadow:0 5px 15px rgba(0,0,0,0.1); }
 .img-loading { color:#6c757d; font-size:0.85em; font-style:italic; }
 .no-images { text-align:center; color:#6c757d; font-style:italic; padding:25px; background:#f8f9fa; border-radius:10px; grid-column:1 / span 2; }
-.popup-img { max-width:100%; border-radius:8px; display:block; box-shadow:0 3px 10px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
-.popup-img:hover { transform:scale(1.03); }
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1000px) {
-  .dashboard {
-    flex-direction: column;
-  }
-  .map-section {
-    min-height: 340px;
-  }
+  .dashboard { flex-direction: column; }
+  .map-section { min-height: 340px; }
 }
 
 /* Responsive Navbar */
 @media (max-width: 768px) {
   nav {
     position: absolute;
-    top: 70px;
+    top: var(--header-height);
     right: 0;
     background: var(--header-bg);
     width: 220px;
@@ -329,9 +325,7 @@ button {
     transition: var(--transition);
   }
 
-  nav.active {
-    transform: translateX(0);
-  }
+  nav.active { transform: translateX(0); }
 
   nav ul {
     flex-direction: column;
@@ -339,100 +333,31 @@ button {
     padding: 1.5rem;
   }
 
-  .menu-toggle {
-    display: block;
-  }
+  .menu-toggle { display: block; }
 }
 
 /* ================= MOBILE FRIENDLY ================= */
 @media (max-width: 480px) {
-  body {
-    font-size: 14px;
-  }
+  body { font-size: 14px; }
 
-  header {
-    padding: 0.8rem 1rem;
-  }
+  header { padding: 0.8rem 1rem; }
+  .logo { font-size: 1.4rem; }
+  .menu-toggle { font-size: 1.5rem; }
+  nav { width: 180px; top: var(--header-height); }
+  nav ul { gap: 0.8rem; padding: 1rem; }
 
-  .logo {
-    font-size: 1.4rem;
-  }
+  .dashboard { flex-direction: column; gap: 15px; padding: 12px; }
+  .form-section, .map-section { width: 100%; padding: 15px; border-radius: 10px; }
+  .form-section h2 { font-size: 1.2rem; }
+  .issue-form input, .issue-form select, .issue-form textarea { padding: 10px; font-size: 0.9rem; }
+  button { padding: 10px; font-size: 0.9rem; }
 
-  .menu-toggle {
-    font-size: 1.5rem;
-  }
+  .map-section { min-height: 740px; }
+  #map { min-height: 340px; border-radius: 8px; }
 
-  nav {
-    width: 180px;
-    top: 60px;
-  }
-
-  nav ul {
-    gap: 0.8rem;
-    padding: 1rem;
-  }
-
-  /* Dashboard stack */
-  .dashboard {
-    flex-direction: column;
-    gap: 15px;
-    padding: 12px;
-  }
-
-  .form-section,
-  .map-section {
-    width: 100%;
-    padding: 15px;
-    border-radius: 10px;
-  }
-
-  .form-section h2 {
-    font-size: 1.2rem;
-  }
-
-  .issue-form input,
-  .issue-form select,
-  .issue-form textarea {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
-  button {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
-  /* Fix Map height on mobile */
-  .map-section {
-    min-height: 740px;
-  }
-
-  #map {
-    min-height: 340px;
-    border-radius: 8px;
-  }
-
-  /* Popup responsiveness */
-  .leaflet-popup-content {
-    width: 90% !important;
-    max-height: 70vh;
-    overflow-y: auto;
-    font-size: 0.85em;
-  }
-
-  .popup-title {
-    font-size: 1.1em;
-  }
-
-  .popup-category {
-    font-size: 0.75em;
-  }
-
-  .image-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .no-images {
-    grid-column: 1;
-  }
+  .leaflet-popup-content { width: 90% !important; max-height: 70vh; overflow-y: auto; font-size: 0.85em; }
+  .popup-title { font-size: 1.1em; }
+  .popup-category { font-size: 0.75em; }
+  .image-grid { grid-template-columns: 1fr; }
+  .no-images { grid-column: 1; }
 }

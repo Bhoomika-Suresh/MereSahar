@@ -1,5 +1,6 @@
 export const initializeMap = (issues) => {
   const map = L.map("map").setView([20.5937, 78.9629], 5);
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors",
@@ -13,10 +14,12 @@ export const initializeMap = (issues) => {
     maxClusterRadius: 50,
   });
 
-  const getIcon = (status) => {
-    let color = "#e74c3c"; // Pending - red
-    if (status === "Ongoing") color = "#f39c12"; // Ongoing - orange
-    if (status === "Completed") color = "#2ecc71"; // Completed - green
+  // Function to get marker color based on urgency
+  const getIcon = (status, urgency) => {
+    let color = "#e74c3c"; // default
+    if (urgency === "Low") color = "#2ecc71";
+    else if (urgency === "Medium") color = "#f39c12";
+    else if (urgency === "High") color = "#e74c3c";
 
     return L.divIcon({
       className: "custom-marker",
@@ -36,23 +39,36 @@ export const initializeMap = (issues) => {
             <span class="popup-category">${issue.category}</span>
           </div>
         </div>
+
         <div class="popup-content">
           <div class="popup-detail">
             <span class="popup-label">Status:</span>
             <span class="popup-value">
-              <span class="status-badge status-${(issue.status||'pending').toLowerCase()}">
+              <span class="status-badge status-${(issue.status || 'pending').toLowerCase()}">
                 ${issue.status || 'Pending'}
               </span>
             </span>
           </div>
+
+          <div class="popup-detail">
+            <span class="popup-label">Urgency:</span>
+            <span class="popup-value urgency-${(issue.urgency || 'Low').toLowerCase()}">
+              ${issue.urgency || 'Low'}
+            </span>
+          </div>
+
           <div class="popup-detail">
             <span class="popup-label">Description:</span>
             <span class="popup-value">${issue.description}</span>
           </div>
+
           <div class="popup-detail">
             <span class="popup-label">Location:</span>
-            <span class="popup-value location-coords">${Number(issue.latitude).toFixed(4)}, ${Number(issue.longitude).toFixed(4)}</span>
+            <span class="popup-value location-coords">
+              ${Number(issue.latitude).toFixed(4)}, ${Number(issue.longitude).toFixed(4)}
+            </span>
           </div>
+
           <div class="popup-images">
             <div class="images-section-title">Images</div>
             <div class="image-grid">
@@ -79,7 +95,7 @@ export const initializeMap = (issues) => {
       </div>
     `;
 
-    const marker = L.marker([issue.latitude, issue.longitude], { icon: getIcon(issue.status) })
+    const marker = L.marker([issue.latitude, issue.longitude], { icon: getIcon(issue.status, issue.urgency) })
                     .bindPopup(popupHtml);
 
     markers.addLayer(marker);
