@@ -3,40 +3,252 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MereSahar - About</title>
-  <link rel="stylesheet" href="style.css">
+  <title>About Us - MereSahar</title>
+  <link rel="stylesheet" href="../css/about.css">
+  
 </head>
 <body>
+  <!-- Header with Menu -->
   <header>
-    <a href="home.html" class="logo"><i class="fas fa-city"></i> MereSahar</a>
-    <nav>
+    <a href="index.html" class="logo">
+      <i class="fas fa-city"></i>
+      <span>MereSahar</span>
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    <nav id="nav">
       <ul>
-        <li><a href="home.html">Home</a></li>
-        <li><a href="about.html" class="active">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="../html/home.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="../html/about.html" class="active"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="../html/contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="../html/faq.html"><i class="fas fa-question-circle"></i> FAQ</a></li>
       </ul>
     </nav>
   </header>
 
-  <main class="container">
-    <h1>About Us</h1>
-    <p>
-      MereSahar is a civic engagement platform designed to help citizens
-      report issues in their city and track their resolution in real-time.
-      We aim to create smarter, more responsive, and cleaner cities by
-      bridging the gap between citizens and municipal authorities.
-    </p>
-    <p>
-      Our mission is to empower communities with easy-to-use tools for
-      reporting problems and ensuring accountability in resolving them.
-    </p>
-  </main>
+  <!-- Main Content -->
+  <div class="container">
+    <h1>About MereSahar</h1>
+    
+    <!-- Hero Section -->
+    <section class="about-hero">
+      <div class="about-hero-content">
+        <h2>Transforming Civic Engagement</h2>
+        <p>MereSahar is a revolutionary platform designed to bridge the gap between citizens and local authorities. We believe that every community deserves a voice and that civic issues should be addressed efficiently and transparently.</p>
+        <p>Our platform empowers citizens to report problems in their neighborhoods while providing administrators with the tools they need to track, manage, and resolve these issues effectively.</p>
+      </div>
+      <div class="about-hero-image">
+        <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Community Engagement">
+      </div>
+    </section>
+    
+    <!-- Mission & Vision Section -->
+    <section class="mission-vision">
+      <div class="mission">
+        <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+        <p>To create a seamless connection between citizens and local governance, enabling faster resolution of civic issues through technology-driven solutions. We aim to make civic participation accessible to everyone, regardless of technical expertise.</p>
+      </div>
+      <div class="vision">
+        <h2><i class="fas fa-eye"></i> Our Vision</h2>
+        <p>We envision cities where civic issues are resolved within days, not months; where every citizen feels heard and empowered; and where local governance is transparent, efficient, and responsive to community needs.</p>
+      </div>
+    </section>
+    
+    <!-- Values Section -->
+    <section class="values">
+      <h2>Our Core Values</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Community First</h3>
+          <p>We prioritize the needs of our community members, ensuring their voices are heard and their concerns addressed promptly.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Transparency</h3>
+          <p>We believe in open communication and clear processes, keeping citizens informed at every step of issue resolution.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h3>Innovation</h3>
+          <p>We continuously improve our platform with the latest technologies to enhance user experience and issue resolution efficiency.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <h3>Collaboration</h3>
+          <p>We foster partnerships between citizens, local authorities, and community organizations for sustainable solutions.</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Team Section -->
+    <section class="team">
+      <h2>Meet Our Team</h2>
+      <div class="team-grid">
+        <div class="team-member">
+          <div class="member-photo">
+            <img src="../images/rohan.jpg" alt="Rohan A Netrakar">
+          </div>
+          <h3>Rohan A Netrakar</h3>
+          <div class="role">Head of the team & Backend Developer</div>
+          <p>Our Backend Developer leads the team at MereSahar, ensuring smooth, secure, and scalable functionality behind the scenes.</p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/rohan-netrakar/" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Rohan-Netrakar" title="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-photo">
+            <img src="../images/bhoomi.jpg" alt="Bhoomika S">
+          </div>
+          <h3>Bhoomika S</h3>
+          <div class="role">Frontend Developer</div>
+          <p>Our Frontend Developer crafts the user experience of MereSahar, bringing designs to life with a modern, responsive, and interactive interface.</p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/bhoomika-s-0b5b82284" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Bhoomika-Suresh" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-photo">
+            <img src="../images/sruju.jpg" alt="Srujana Ellur">
+          </div>
+          <h3>Srujana Ellur</h3>
+          <div class="role">Database & Testing Developer</div>
+          <p>Manages data efficiently and ensures a smooth, bug-free experience on MereSahar.</p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/srujana-ellur/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/SrujanaEllur" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
 
+        <div class="team-member">
+          <div class="member-photo">
+            <img src="../images/eesha.jpg" alt="Meesala Eesha">
+          </div>
+          <h3>Meesala Eesha</h3>
+          <div class="role">Team Member</div>
+          <p>Contributes to the development and improvement of MereSahar with dedication and expertise.</p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/meesala-eesha" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/MeesalaEesha" title="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+
+        <div class="team-member">
+          <div class="member-photo">
+            <img src="../images/rakshitha.jpg" alt="Allur Rakshitha">
+          </div>
+          <h3>Allur Rakshitha</h3>
+          <div class="role">Team Member</div>
+          <p>Works collaboratively to enhance the features and functionality of the MereSahar platform.</p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/rakshitha-aluru-a165542ba" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/raluru-creator" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+  
+        <div class="team-member">
+          <div class="member-photo">
+            <img src="../images/sree keerthana.jpg" alt="M Sree Keerthana">
+          </div>
+          <h3>M Sree Keerthana</h3>
+          <div class="role">Team Member</div>
+          <p>Dedicated to ensuring the quality and performance of the MereSahar application.</p>
+          <div class="social-links">
+            <a href="https://www.linkedin.com/in/sree-keerthana22/" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/sree-2210" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
   <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>MereSahar</h3>
+        <p>A platform for citizens to report civic issues and for administrators to efficiently manage and resolve them.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="../html/home.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a href="../html/about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+          <li><a href="../html/contact.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Contact Info</h3>
+        <ul class="footer-links">
+          <li><i class="fas fa-map-marker-alt"></i> Gitam University, nagdenalli, dodballapur 561203</li>
+          <li><i class="fas fa-phone"></i> +91 8073588676</li>
+          <li><i class="fas fa-envelope"></i> rohannetrakar25@gmail.com</li>
+          <li><i class="fas fa-clock"></i> 8am-4pm Support Available</li>
+        </ul>
+      </div>
+    </div>
+    
     <div class="footer-bottom">
-      <p>&copy; 2025 MereSahar | About Page</p>
+      <p>&copy; 2023 MereSahar. All rights reserved.</p>
     </div>
   </footer>
+
+  <script>
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('nav');
+    
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      
+      // Change icon based on menu state
+      const icon = menuToggle.querySelector('i');
+      if (nav.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+      } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
+    
+    // Add animation to elements on scroll
+    document.addEventListener('DOMContentLoaded', () => {
+      const animatedElements = document.querySelectorAll('.about-hero, .mission, .vision, .value-card, .team-member');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animation = 'fadeIn 1s ease forwards';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        observer.observe(el);
+      });
+    });
+  </script>
 </body>
 </html>

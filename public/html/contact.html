@@ -3,44 +3,219 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MereSahar - Contact</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>Contact Us - MereSahar</title>
+  <link rel="stylesheet" href="../css/contact.css">
 
 </head>
 <body>
+  <!-- Header with Menu -->
   <header>
-    <a href="home.html" class="logo"><i class="fas fa-city"></i> MereSahar</a>
-    <nav>
+    <a href="index.html" class="logo">
+      <i class="fas fa-city"></i>
+      <span>MereSahar</span>
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    <nav id="nav">
       <ul>
-        <li><a href="home.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html" class="active">Contact</a></li>
-        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="../html/home.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="../html/about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="../html/contact.html" class="active"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="../html/faq.html"><i class="fas fa-question-circle"></i> FAQ</a></li>
       </ul>
     </nav>
   </header>
 
-  <main class="container">
+  <!-- Main Content -->
+  <div class="container">
     <h1>Contact Us</h1>
-    <form class="contact-form">
-      <label for="name">Your Name</label>
-      <input type="text" id="name" placeholder="Enter your name" required>
+    
+    <!-- Contact Section -->
+    <section class="contact-container">
+      <div class="contact-info">
+        <h2><i class="fas fa-info-circle"></i> Get In Touch</h2>
+        <p>Have questions or need support? We're here to help. Reach out to us through any of the following channels.</p>
+        
+        <div class="contact-item">
+          <div class="contact-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div class="contact-details">
+            <h3>Our Office</h3>
+            <p>Gitam University, Nagdenalli, Dodballapur 561203</p>
+          </div>
+        </div>
+        
+        <div class="contact-item">
+          <div class="contact-icon">
+            <i class="fas fa-phone"></i>
+          </div>
+          <div class="contact-details">
+            <h3>Phone Number</h3>
+            <p>+91 8073588676, 8am-4pm</p>
+          </div>
+        </div>
+        
+        <div class="contact-item">
+          <div class="contact-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="contact-details">
+            <h3>Email Address</h3>
+            <p>rohannetrakar25@gmail.com<br>support@meresahar.com</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="contact-form">
+        <h2><i class="fas fa-paper-plane"></i> Send Message</h2>
+        <form id="contactForm">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" class="form-control" placeholder="Enter subject" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" class="form-control" placeholder="Enter your message" required></textarea>
+          </div>
+          
+          <button type="submit" class="btn">
+            <span>Send Message</span>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+    
+    <!-- Map Section -->
+    <section class="map-section">
+      <h2>Find Us</h2>
+      <div class="map-container">
+        <div class="map-placeholder">
+          <i class="fas fa-map-marked-alt"></i>
+          <h3>Our Location</h3>
+          <p>Gitam University, Nagdenalli, Dodballapur 561203</p>
+          <p>Click below to view on Google Maps</p>
+          <!-- Fixed the href to open Google Maps in a new tab -->
+          <a href="https://www.google.com/maps/place/Gitam+School+Of+Technology/@13.2873251,77.5770057,15z/data=!4m6!3m5!1s0x3bb1df1ef700c569:0x63c48bea1860047d!8m2!3d13.2873251!4d77.5770057!16s%2Fg%2F11g0j_3w9h?entry=ttu" 
+             target="_blank" class="btn">
+            <span>View on Maps</span>
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+        <!-- Embedded Google Maps iframe -->
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15532.039388375577!2d77.57700568617872!3d13.287325135240934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bb1df1ef700c569%3A0x63c48bea1860047d!2sGitam%20School%20Of%20Technology!5e0!3m2!1sen!2sin!4v1758712108022!5m2!1sen!2sin" 
+                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+    
+  </div>
 
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="Enter your email" required>
-
-      <label for="message">Message</label>
-      <textarea id="message" placeholder="Write your message" required></textarea>
-
-      <button type="submit" class="submit-btn">Send Message</button>
-    </form>
-  </main>
-
+  <!-- Footer -->
   <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>MereSahar</h3>
+        <p>A platform for citizens to report civic issues and for administrators to efficiently manage and resolve them.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="../html/home.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a href="../html/about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+          <li><a href="../html/contact.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Contact Info</h3>
+        <ul class="footer-links">
+          <li><i class="fas fa-map-marker-alt"></i> Gitam University, Nagdenalli, Dodballapur 561203</li>
+          <li><i class="fas fa-phone"></i> +91 8073588676</li>
+          <li><i class="fas fa-envelope"></i> info@meresahar.com</li>
+          <li><i class="fas fa-clock"></i> 24/7 Support Available</li>
+        </ul>
+      </div>
+    </div>
+    
     <div class="footer-bottom">
-      <p>&copy; 2025 MereSahar | Contact Page</p>
+      <p>&copy; 2023 MereSahar. All rights reserved.</p>
     </div>
   </footer>
+
+  <script>
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('nav');
+    
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      
+      // Change icon based on menu state
+      const icon = menuToggle.querySelector('i');
+      if (nav.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+      } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
+    
+    // Contact form submission
+    const contactForm = document.getElementById('contactForm');
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Get form values
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+      
+      // In a real implementation, you would send this data to a server
+      // For now, we'll just show an alert
+      alert(`Thank you, ${name}! Your message has been sent. We'll get back to you at ${email} soon.`);
+      
+      // Reset the form
+      contactForm.reset();
+    });
+    
+    // Add animation to elements on scroll
+    document.addEventListener('DOMContentLoaded', () => {
+      const animatedElements = document.querySelectorAll('.contact-info, .contact-form, .map-section');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animation = 'fadeIn 1s ease forwards';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        observer.observe(el);
+      });
+    });
+  </script>
 </body>
 </html>

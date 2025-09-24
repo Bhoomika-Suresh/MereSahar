@@ -3,67 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MereSahar - Home</title>
-  <link rel="stylesheet" href="style.css">
+  <title>MereSahar - Civic Issue Resolution Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
+  <!-- Header with Menu -->
   <header>
-    <a href="home.html" class="logo"><i class="fas fa-city"></i> MereSahar</a>
-    <nav>
+    <a href="#" class="logo">
+      <i class="fas fa-city"></i>
+      <span>MereSahar</span>
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    <nav id="nav">
       <ul>
-        <li><a href="home.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="../html/home.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="../html/about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="../html/contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="../html/faq.html"><i class="fas fa-question-circle"></i> FAQ</a></li>
       </ul>
     </nav>
-  </header> 
+  </header>
 
-  <main class="container">
+  <!-- Main Content -->
+  <div class="container">
     <h1>Welcome to MereSahar</h1>
     <div class="dashboards">
+      
+      <!-- User Dashboard -->
       <div class="card">
-        <img src="user.png" alt="User Dashboard">
+        <img src="https://img.icons8.com/ios-filled/150/people-working-together.png" alt="User Dashboard">
         <h2>User Dashboard</h2>
-        <p>Report civic issues and track your submissions in real-time with our tracking system.</p>
-        <a href="#">Go to User Dashboard <i class="fas fa-arrow-right"></i></a>
+        <p>Report civic issues and track your submissions in real-time with our advanced tracking system.</p>
+        <a href="/user">
+          <span>Go to the User Dashboard</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
       </div>
+
+      <!-- Admin Dashboard -->
       <div class="card">
-        <img src="admin.png" alt="Admin Dashboard">
+        <img src="https://img.icons8.com/ios-filled/150/administrator-male.png" alt="Admin Dashboard">
         <h2>Admin Dashboard</h2>
-        <p>Manage and update reported issues with powerful admin tools.</p>
-        <a href="#">Go to Admin Dashboard <i class="fas fa-arrow-right"></i></a>
+        <p>View, manage, and update the status of reported issues with our comprehensive admin tools.</p>
+        <a href="/admin">
+          <span>Go to Admin Dashboard</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
       </div>
     </div>
-  </main>
+  </div>
 
+  <!-- Footer -->
   <footer>
     <div class="footer-content">
       <div class="footer-section">
-        <h3>About MereSahar</h3>
-        <p>Making cities smarter by connecting citizens with local authorities for faster issue resolution.</p>
+        <h3>MereSahar</h3>
+        <p>A platform for citizens to report civic issues and for administrators to efficiently manage and resolve them.</p>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
       </div>
+      
       <div class="footer-section">
         <h3>Quick Links</h3>
         <ul class="footer-links">
-          <li><a href="home.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Services</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
         </ul>
       </div>
+      
       <div class="footer-section">
-        <h3>Follow Us</h3>
-        <div class="social-icons">
-          <a href="#"><i class="fab fa-facebook"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-linkedin"></i></a>
-        </div>
+        <h3>Contact Info</h3>
+        <ul class="footer-links">
+          <li><i class="fas fa-map-marker-alt"></i> 123 Civic Center, City</li>
+          <li><i class="fas fa-phone"></i> +1 234 567 8900</li>
+          <li><i class="fas fa-envelope"></i> info@meresahar.com</li>
+          <li><i class="fas fa-clock"></i> 24/7 Support Available</li>
+        </ul>
       </div>
     </div>
+    
     <div class="footer-bottom">
-      <p>&copy; 2025 MereSahar | All Rights Reserved</p>
+      <p>&copy; 2023 MereSahar. All rights reserved.</p>
     </div>
   </footer>
+
+  <script>
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('nav');
+    
+    menuToggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      
+      // Change icon based on menu state
+      const icon = menuToggle.querySelector('i');
+      if (nav.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+      } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
+    
+    // Add pulse animation to cards on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        // Delay the animation for each card
+        setTimeout(() => {
+          card.classList.add('pulse');
+          setTimeout(() => {
+            card.classList.remove('pulse');
+          }, 2000);
+        }, index * 300);
+      });
+    });
+  </script>
 </body>
 </html>
