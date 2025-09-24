@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Login - MereSahar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #0078d7;
+            box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #0078d7;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #005fa3;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/user.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header with Menu -->
+    <header>
+        <a href="/" class="logo">
+            <i class="fas fa-city"></i>
+            <span>MereSahar</span>
+        </a>
+
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav id="nav">
+            <ul>
+                <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="login-container">
+        <h2>🛠️ MereSahar Admin Login</h2>
+
+        <% if (typeof error !=="undefined" && error) { %>
+            <p class="error">
+                <%= error %>
+            </p>
+            <% } %>
+
+                <form action="/admin/login" method="POST">
+                    <input type="text" name="username" placeholder="Username" required />
+                    <input type="password" name="password" placeholder="Password" required />
+                    <button type="submit">Login</button>
+                </form>
+    </div>
+</body>
+
+</html>

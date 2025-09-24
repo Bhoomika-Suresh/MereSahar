@@ -5,12 +5,15 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { Pool } from "pg";
 import multer from "multer";
+import bcrypt from "bcrypt";
+import session from "express-session";
 
 dotenv.config();
 
 const app = express();
 const port = 3000;
 
+// -------------------- DATABASE --------------------
 const db = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -21,99 +24,92 @@ const db = new Pool({
 });
 
 db.connect()
-  .then((client) => {
+  .then(client => {
     console.log("Connected to PostgreSQL database.");
     client.release();
   })
-  .catch((err) => {
+  .catch(err => {
     console.error("DB connection error", err);
     process.exit(1);
   });
 
+// -------------------- FILE & SESSION SETUP --------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// --------------------
-// ROUTES
-// --------------------
+// -------------------- MIDDLEWARE --------------------
+function isAdminLoggedIn(req, res, next) {
+  if (req.session && req.session.admin) {
+    next();
+  } else {
+    res.redirect("/admin/login");
+  }
+}
+
+// -------------------- ROUTES --------------------
 
 // Home
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "index.html"));
 });
 
-// Get all issues (frontend display only)
-// Get all issues (frontend display with filters)
+// User Dashboard
 app.get("/user", async (req, res) => {
   const { category, status, urgency } = req.query;
-
   try {
     let query = `
-      SELECT 
-        id, username, category, description, latitude, longitude, status, urgency,
-        (image IS NOT NULL) AS has_before,
-        (after_image IS NOT NULL) AS has_after
+      SELECT id, username, category, description, latitude, longitude, status, urgency,
+             (image IS NOT NULL) AS has_before,
+             (after_image IS NOT NULL) AS has_after
       FROM meresahar
     `;
-
-    let conditions = [];
-    let values = [];
+    const conditions = [];
+    const values = [];
     let idx = 1;
-
-    if (category) {
-      conditions.push(`category = $${idx++}`);
-      values.push(category);
-    }
-    if (status) {
-      conditions.push(`status = $${idx++}`);
-      values.push(status);
-    }
-    if (urgency) {
-      conditions.push(`urgency = $${idx++}`);
-      values.push(urgency);
-    }
-
-    if (conditions.length > 0) {
-      query += " WHERE " + conditions.join(" AND ");
-    }
-
+    if (category) { conditions.push(`category=$${idx++}`); values.push(category); }
+    if (status) { conditions.push(`status=$${idx++}`); values.push(status); }
+    if (urgency) { conditions.push(`urgency=$${idx++}`); values.push(urgency); }
+    if (conditions.length > 0) query += " WHERE " + conditions.join(" AND ");
     query += " ORDER BY id DESC";
-
     const result = await db.query(query, values);
-
-    const issues = result.rows.map((row) => ({
+    const issues = result.rows.map(row => ({
       ...row,
       status: row.status || "Pending",
       urgency: row.urgency || "Low",
-    })); 
-
+    }));
     res.render("user", { title: "MereSahar Dashboard", issues, req });
   } catch (err) {
-    console.error("Error fetching records", err.stack);
+    console.error(err.stack);
     res.status(500).send("Database error");
   }
 });
 
-
-
-// Serve images separately
+// Serve Images
 app.get("/images/:id/:type", async (req, res) => {
-  const { id, type } = req.params; // type = "before" or "after"
+  const { id, type } = req.params;
   const column = type === "after" ? "after_image" : "image";
-
   try {
     const result = await db.query(`SELECT ${column} FROM meresahar WHERE id=$1`, [id]);
-    if (!result.rows.length || !result.rows[0][column]) {
-      return res.status(404).send("No image");
-    }
-
+    if (!result.rows.length || !result.rows[0][column]) return res.status(404).send("No image");
     res.setHeader("Content-Type", "image/png");
     res.send(result.rows[0][column]);
   } catch (err) {
@@ -122,21 +118,15 @@ app.get("/images/:id/:type", async (req, res) => {
   }
 });
 
-// Submit new report
+// Submit New Report
 app.post("/report", upload.single("image"), async (req, res) => {
   const { username, category, description, latitude, longitude } = req.body;
   const imageBuffer = req.file ? req.file.buffer : null;
-
-  // Ensure description is always a string
-  const safeDescription = description.toString();
-
-  try { 
+  try {
     await db.query(
-      `
-      INSERT INTO meresahar (username, category, description, latitude, longitude, image)
-      VALUES ($1,$2,$3,$4,$5,$6)
-    `,
-      [username, category, safeDescription, latitude, longitude, imageBuffer]
+      `INSERT INTO meresahar (username, category, description, latitude, longitude, image)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+      [username, category, description.toString(), latitude, longitude, imageBuffer]
     );
     res.redirect("/user");
   } catch (err) {
@@ -145,65 +135,102 @@ app.post("/report", upload.single("image"), async (req, res) => {
   }
 });
 
-// Admin dashboard
-// Admin dashboard with filters
-app.get("/admin", async (req, res) => {
-  const { category, status, urgency } = req.query;
+// -------------------- ADMIN ROUTES --------------------
+
+// Login Page
+app.get("/admin/login", (req, res) => {
+  res.render("login", { error: null });
+});
+
+// Login POST
+app.post("/admin/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const result = await db.query("SELECT * FROM users WHERE username=$1 LIMIT 1", [username]);
+    if (!result.rows.length) return res.render("login", { error: "Invalid username or password" });
+
+    const user = result.rows[0];
+    const match = await bcrypt.compare(password, user.password_hash);
+    if (!match) return res.render("login", { error: "Invalid username or password" });
+
+    req.session.admin = { id: user.id, username: user.username };
+    res.redirect("/admin");
+  } catch (err) {
+    console.error(err);
+    res.render("login", { error: "Database error" });
+  }
+});
+
+// Logout
+app.get("/admin/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/admin/login");
+});
+// Add User form page (protected)
+app.get("/admin/add-user", (req, res) => {
+  res.render("adduser", { error: null, admin: req.session.admin });
+});
+
+// Handle Add User form submission
+app.post("/admin/add-user", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.render("adduser", { error: "Username and password are required", admin: req.session.admin });
+  }
 
   try {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
+      [username, hashedPassword]
+    );
+    res.redirect("/admin"); // redirect to admin dashboard after adding user
+  } catch (err) {
+    console.error(err);
+    res.render("adduser", { error: "Database error or username already exists", admin: req.session.admin });
+  }
+});
+
+
+// Admin Dashboard (protected)
+app.get("/admin", isAdminLoggedIn, async (req, res) => {
+  const { category, status, urgency } = req.query;
+  try {
     let query = `
-      SELECT 
-        id, username, category, description, latitude, longitude, status, urgency,
-        (image IS NOT NULL) AS has_before,
-        (after_image IS NOT NULL) AS has_after
+      SELECT id, username, category, description, latitude, longitude, status, urgency,
+             (image IS NOT NULL) AS has_before,
+             (after_image IS NOT NULL) AS has_after
       FROM meresahar
     `;
-
-    let conditions = [];
-    let values = [];
+    const conditions = [];
+    const values = [];
     let idx = 1;
-
-    if (category) {
-      conditions.push(`category = $${idx++}`);
-      values.push(category);
-    }
-    if (status) {
-      conditions.push(`status = $${idx++}`);
-      values.push(status);
-    }
-    if (urgency) {
-      conditions.push(`urgency = $${idx++}`);
-      values.push(urgency);
-    }
-
-    if (conditions.length > 0) {
-      query += " WHERE " + conditions.join(" AND ");
-    }
-
+    if (category) { conditions.push(`category=$${idx++}`); values.push(category); }
+    if (status) { conditions.push(`status=$${idx++}`); values.push(status); }
+    if (urgency) { conditions.push(`urgency=$${idx++}`); values.push(urgency); }
+    if (conditions.length > 0) query += " WHERE " + conditions.join(" AND ");
     query += " ORDER BY id DESC";
 
     const result = await db.query(query, values);
-
-    const issues = result.rows.map((row) => ({
+    const issues = result.rows.map(row => ({
       ...row,
       status: row.status || "Pending",
       urgency: row.urgency || "Low",
     }));
 
-    res.render("admin", { issues });
+    res.render("admin", { issues, admin: req.session.admin });
   } catch (err) {
-    console.error("Error fetching records", err.stack);
+    console.error(err.stack);
     res.status(500).send("Database error");
   }
 });
 
-
-// Update issue
-app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => {
+// Update Issue (protected)
+app.post("/admin/update/:id", isAdminLoggedIn, upload.single("after_image"), async (req, res) => {
   const { id } = req.params;
-  const { status, urgency } = req.body; // added urgency
+  const { status, urgency } = req.body;
   const afterImageBuffer = req.file ? req.file.buffer : null;
-
   try {
     if (afterImageBuffer && status === "Completed") {
       await db.query(
@@ -211,10 +238,7 @@ app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => 
         [status, urgency, afterImageBuffer, id]
       );
     } else {
-      await db.query(
-        "UPDATE meresahar SET status=$1, urgency=$2 WHERE id=$3",
-        [status, urgency, id]
-      );
+      await db.query("UPDATE meresahar SET status=$1, urgency=$2 WHERE id=$3", [status, urgency, id]);
     }
     res.redirect("/admin");
   } catch (err) {
@@ -224,4 +248,19 @@ app.post("/admin/update/:id", upload.single("after_image"), async (req, res) => 
 });
 
 
+// Logout route
+app.get("/admin/logout", (req, res) => {
+  // Destroy the session
+  req.session.destroy(err => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).send("Could not log out. Try again.");
+    }
+    // Redirect to admin login page after logout
+    res.redirect("/admin/login");
+  });
+});
+
+
+// -------------------- START SERVER --------------------
 app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
