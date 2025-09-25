@@ -3,9 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>
-    <%= title %>
-  </title>
+  <title><%= title %></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- CSS -->
@@ -37,7 +35,6 @@
       </ul>
     </nav>
   </header>
-
 
   <!-- 🔽 FILTER SECTION -->
   <section class="filter-section">
@@ -158,7 +155,6 @@
     </div>
   </footer>
 
-
   <!-- Leaflet + Cluster -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
@@ -166,13 +162,49 @@
   <!-- JS Modules -->
   <script type="module">
     import { initializeMap } from "/js/map.js";
-    import { initGeolocation } from "/js/geolocation.js";
     import { initCamera } from "/js/camera.js";
 
     const issues = JSON.parse('<%- JSON.stringify(issues || []) %>');
     const map = initializeMap(issues);
-    initGeolocation(map);
     initCamera();
+
+    // ================= Auto-Geolocation on submit =================
+    const issueForm = document.getElementById('issueForm');
+    const issueLat = document.getElementById('issueLat');
+    const issueLng = document.getElementById('issueLng');
+    const getLocBtn = document.getElementById('getLoc');
+
+    const fetchLocation = (callback) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            issueLat.value = position.coords.latitude;
+            issueLng.value = position.coords.longitude;
+            if (callback) callback();
+          },
+          function () {
+            alert('Unable to retrieve location. Please allow location access.');
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      } else {
+        alert('Geolocation not supported by your browser.');
+      }
+    };
+
+    // Manual "Get My Location" button
+    getLocBtn.addEventListener('click', () => fetchLocation());
+
+    // Auto location on form submit
+    issueForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // prevent default submission
+      const username = document.getElementById("username").value.trim();
+      if (!username) return alert("Please enter your name first!");
+
+      // Fetch location first, then submit form
+      fetchLocation(() => issueForm.submit());
+    });
+
   </script>
 
   <!-- Navbar toggle -->
@@ -187,5 +219,4 @@
     });
   </script>
 </body>
-
 </html>
